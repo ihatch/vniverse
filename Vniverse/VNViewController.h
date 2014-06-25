@@ -8,6 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
-@interface VNViewController : UIViewController
+@interface VNViewController : UIViewController <UIScrollViewDelegate, UIWebViewDelegate>
+
+@property NSTimer *backgroundTimer;
+
++ (void) suspendTimers;
++ (void) resumeTimers;
++ (void) slowFadeBackground;
 
 @end
