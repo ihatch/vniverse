@@ -28,7 +28,7 @@ UIScrollView *scrollView;
 UIView *topBarView, *textView, *constellationsModal, *oracleModal, *infoModal;
 UIWebView *infoView;
 UIButton *activeNavButton, *clearButton, *drawButton, *consButton, *waveButton, *oracleButton, *infoButton;
-UIColor *normalColor, *selectedColor, *standardBackColor;
+UIColor *normalColor, *selectedColor, *standardBackColor, *initBackColor;
 NSArray *oracleQuestions;
 int stardateDestination;
 
@@ -49,9 +49,11 @@ int stardateDestination;
     scrollBounds = CGRectMake(0, 80, 1024, 688);
     inScrollBounds = CGRectMake(0, 0, 1024, 688);
     
-    normalColor = [UIColor colorWithRed:0.4 green:0.5 blue:0.6 alpha:1];
-    selectedColor = [UIColor colorWithRed:0.65 green:0.75 blue:0.85 alpha:1];
-    standardBackColor = [UIColor colorWithRed:0.15 green:0.07 blue:0.15 alpha:1];
+    normalColor = [UIColor colorWithRed:0.65 green:0.75 blue:0.85 alpha:1];
+    selectedColor = [UIColor colorWithRed:0.8 green:0.9 blue:1.0 alpha:1];
+    standardBackColor = [UIColor colorWithRed:0.25 green:0.13 blue:0.25 alpha:0.8];
+    initBackColor = [UIColor colorWithRed:0.14 green:0.09 blue:0.15 alpha:0.90];
+    
 
     oracleQuestions = @[@"Whose body?",
                         @"How to know?",
@@ -61,7 +63,7 @@ int stardateDestination;
                         @"When did you say?",
                         @"Which one?"];
 
-    self.view.backgroundColor = standardBackColor;
+    self.view.backgroundColor = initBackColor;
     currentMode = DRAW;
 
     [self initScrollView];
@@ -79,12 +81,12 @@ int stardateDestination;
 
 
 + (void) slowFadeBackground {
-    CGFloat r = 0.10 + (ABF(0.04));
-    CGFloat g = 0.05 + (ABF(0.04));
-    CGFloat b = 0.11 + (ABF(0.04));
+    CGFloat r = 0.10 + (ABF(0.06));
+    CGFloat g = 0.05 + (ABF(0.06));
+    CGFloat b = 0.11 + (ABF(0.06));
     
     [UIView animateWithDuration:15.9 delay:0 options:(UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionBeginFromCurrentState) animations:^{
-        thisController.view.backgroundColor = [UIColor colorWithRed:r green:g blue:b alpha:1];
+        thisController.view.backgroundColor = [UIColor colorWithRed:r green:g blue:b alpha:0.90];
     } completion:^(BOOL finished) {}];
 }
 

@@ -25,7 +25,6 @@
 		C6540DE9188B62EA00F26E48 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = C6540DE7188B62EA00F26E48 /* InfoPlist.strings */; };
 		C6540DEB188B62EA00F26E48 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C6540DEA188B62EA00F26E48 /* main.m */; };
 		C6540DEF188B62EA00F26E48 /* VNAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C6540DEE188B62EA00F26E48 /* VNAppDelegate.m */; };
-		C6540DF2188B62EA00F26E48 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C6540DF0188B62EA00F26E48 /* Main.storyboard */; };
 		C6540DF5188B62EA00F26E48 /* VNViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C6540DF4188B62EA00F26E48 /* VNViewController.m */; };
 		C6540DF7188B62EA00F26E48 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C6540DF6188B62EA00F26E48 /* Images.xcassets */; };
 		C6540DFE188B62EA00F26E48 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C6540DFD188B62EA00F26E48 /* XCTest.framework */; };
@@ -381,7 +380,6 @@
 				C628BAA218AD327900CDAB78 /* v-constellations.txt in Resources */,
 				C628BA9A18AC726200CDAB78 /* button_back_bright.png in Resources */,
 				C6540DE9188B62EA00F26E48 /* InfoPlist.strings in Resources */,
-				C6540DF2188B62EA00F26E48 /* Main.storyboard in Resources */,
 				C6391C0E188E43B000CCC1AD /* v-words.txt in Resources */,
 				C628BA9818AC651000CDAB78 /* button_back.png in Resources */,
 				C6F40332188F23980073F62A /* lensflare180.png in Resources */,
@@ -500,6 +498,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
+				PROVISIONING_PROFILE = "63D42988-C71B-45CA-AD6C-C08632162FA8";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 2;
 			};
@@ -523,7 +522,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer: Ian Hatcher (6NSQ5G4H8K)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				COPY_PHASE_STRIP = YES;
+				COPY_PHASE_STRIP = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -533,6 +532,8 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				ONLY_ACTIVE_ARCH = YES;
+				PROVISIONING_PROFILE = "63D42988-C71B-45CA-AD6C-C08632162FA8";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 2;
 				VALIDATE_PRODUCT = YES;
@@ -542,18 +543,17 @@
 		C6540E0E188B62EA00F26E48 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-2";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Vniverse/Vniverse-Prefix.pch";
 				INFOPLIST_FILE = "Vniverse/Vniverse-Info.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"/Users/ihatcher/Documents/obj-c/Vniverse/Vniverse",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "63D42988-C71B-45CA-AD6C-C08632162FA8";
+				PROVISIONING_PROFILE = "";
+				TARGETED_DEVICE_FAMILY = 2;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -561,18 +561,17 @@
 		C6540E0F188B62EA00F26E48 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-2";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Vniverse/Vniverse-Prefix.pch";
 				INFOPLIST_FILE = "Vniverse/Vniverse-Info.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"/Users/ihatcher/Documents/obj-c/Vniverse/Vniverse",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "63D42988-C71B-45CA-AD6C-C08632162FA8";
+				PROVISIONING_PROFILE = "";
+				TARGETED_DEVICE_FAMILY = 2;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

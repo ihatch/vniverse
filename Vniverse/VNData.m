@@ -47,29 +47,29 @@ int cachedScreenWidth;
 + (void) createConstellationColors {
 
     NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-    [dict setObject:[UIColor colorWithRed:0.9 green:0.0 blue:0.1 alpha:1] forKey:@"swimmer"];
-    [dict setObject:[UIColor colorWithRed:0.2 green:0.4 blue:0.9 alpha:1] forKey:@"conductor"];
-    [dict setObject:[UIColor colorWithRed:0.6 green:0.4 blue:0.6 alpha:1] forKey:@"broom"];
-    [dict setObject:[UIColor colorWithRed:0.0 green:0.6 blue:0.8 alpha:1] forKey:@"dipper"];
+    [dict setObject:[UIColor colorWithRed:1.0 green:0.0 blue:0.1 alpha:1] forKey:@"swimmer"];
+    [dict setObject:[UIColor colorWithRed:0.2 green:0.4 blue:1.0 alpha:1] forKey:@"conductor"];
+    [dict setObject:[UIColor colorWithRed:0.8 green:0.4 blue:0.8 alpha:1] forKey:@"broom"];
+    [dict setObject:[UIColor colorWithRed:0.0 green:0.6 blue:1.0 alpha:1] forKey:@"dipper"];
     [dict setObject:[UIColor colorWithRed:0.6 green:0.9 blue:0.9 alpha:1] forKey:@"twins"];
-    [dict setObject:[UIColor colorWithRed:0.2 green:0.6 blue:0.4 alpha:1] forKey:@"bull"];
+    [dict setObject:[UIColor colorWithRed:0.2 green:0.6 blue:0.5 alpha:1] forKey:@"bull"];
     [dict setObject:[UIColor colorWithRed:0.0 green:0.7 blue:0.7 alpha:1] forKey:@"embryo"];
-    [dict setObject:[UIColor colorWithRed:0.6 green:0.2 blue:0.8 alpha:1] forKey:@"goose"];
-    [dict setObject:[UIColor colorWithRed:0.8 green:0.6 blue:0.2 alpha:1] forKey:@"infinity"];
-    [dict setObject:[UIColor colorWithRed:0.0 green:0.6 blue:0.2 alpha:1] forKey:@"dragonfly"];
+    [dict setObject:[UIColor colorWithRed:0.6 green:0.2 blue:0.9 alpha:1] forKey:@"goose"];
+    [dict setObject:[UIColor colorWithRed:0.9 green:0.6 blue:0.2 alpha:1] forKey:@"infinity"];
+    [dict setObject:[UIColor colorWithRed:0.0 green:0.8 blue:0.2 alpha:1] forKey:@"dragonfly"];
     constellationColors = [NSDictionary dictionaryWithDictionary:dict];
     
     dict = [NSMutableDictionary dictionary];
     [dict setObject:[UIColor colorWithRed:0.9 green:0.0 blue:0.1 alpha:0.6] forKey:@"swimmer"];
     [dict setObject:[UIColor colorWithRed:0.2 green:0.4 blue:0.9 alpha:0.6] forKey:@"conductor"];
-    [dict setObject:[UIColor colorWithRed:0.6 green:0.4 blue:0.6 alpha:0.6] forKey:@"broom"];
-    [dict setObject:[UIColor colorWithRed:0.0 green:0.6 blue:0.8 alpha:0.6] forKey:@"dipper"];
+    [dict setObject:[UIColor colorWithRed:0.7 green:0.4 blue:0.7 alpha:0.6] forKey:@"broom"];
+    [dict setObject:[UIColor colorWithRed:0.0 green:0.6 blue:0.9 alpha:0.6] forKey:@"dipper"];
     [dict setObject:[UIColor colorWithRed:0.6 green:0.9 blue:0.9 alpha:0.6] forKey:@"twins"];
-    [dict setObject:[UIColor colorWithRed:0.2 green:0.6 blue:0.4 alpha:0.6] forKey:@"bull"];
+    [dict setObject:[UIColor colorWithRed:0.2 green:0.6 blue:0.5 alpha:0.6] forKey:@"bull"];
     [dict setObject:[UIColor colorWithRed:0.0 green:0.7 blue:0.7 alpha:0.6] forKey:@"embryo"];
-    [dict setObject:[UIColor colorWithRed:0.6 green:0.2 blue:0.8 alpha:0.6] forKey:@"goose"];
-    [dict setObject:[UIColor colorWithRed:0.8 green:0.6 blue:0.2 alpha:0.6] forKey:@"infinity"];
-    [dict setObject:[UIColor colorWithRed:0.0 green:0.6 blue:0.2 alpha:0.6] forKey:@"dragonfly"];
+    [dict setObject:[UIColor colorWithRed:0.6 green:0.2 blue:0.9 alpha:0.6] forKey:@"goose"];
+    [dict setObject:[UIColor colorWithRed:0.9 green:0.6 blue:0.2 alpha:0.6] forKey:@"infinity"];
+    [dict setObject:[UIColor colorWithRed:0.0 green:0.8 blue:0.2 alpha:0.6] forKey:@"dragonfly"];
     constellationColorsForCircles = [NSDictionary dictionaryWithDictionary:dict];
 
 }

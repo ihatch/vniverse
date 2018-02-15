@@ -373,7 +373,7 @@
     if(withConstellationColor) {
         color = [VNData circleColorForStar:starID];
     } else {
-        color = [UIColor colorWithRed:0.2 green:0.2 blue:0.7 alpha:0.6];
+        color = [UIColor colorWithRed:0.2 green:0.4 blue:0.8 alpha:0.4];
     }
     [self addGrowingCircleAtPoint:[VNData coordinatesForStar:starID] withColor:color];
 }
@@ -403,7 +403,7 @@
     // set up the growing animation
     CABasicAnimation *grow = [CABasicAnimation animationWithKeyPath:@"transform"];
     grow.fromValue = [layer valueForKey:@"transform"];
-    CATransform3D t = CATransform3DMakeScale(10.f, 10.f, 1.f);
+    CATransform3D t = CATransform3DMakeScale(7.f, 7.f, 1.f);
     grow.toValue = [NSValue valueWithCATransform3D:t];
     grow.duration = 1.f;
     grow.delegate = self;
@@ -414,7 +414,7 @@
     CABasicAnimation *fade = [CABasicAnimation animationWithKeyPath:@"opacity"];
     fade.fromValue = [layer valueForKey:@"opacity"];
     fade.toValue = [NSNumber numberWithFloat:0.f];
-    fade.duration = .7f;
+    fade.duration = .9f;
     fade.delegate = self;
     layer.opacity = 0.f;
     [fade setValue:@"fade" forKey:@"name"];

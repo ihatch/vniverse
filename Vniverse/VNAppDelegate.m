@@ -16,6 +16,18 @@
 {
     // Override point for customization after application launch.
 //    [TestFlight takeOff:@"17586423-df57-4ecd-87e7-f389bf4a7ed3"];
+
+    self.window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
+//    
+//    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil];
+//    
+//    UIViewController *viewController = [ // determine the initial view controller here and instantiate it with [storyboard instantiateViewControllerWithIdentifier:<storyboard id>];
+    
+    self.window.rootViewController = [[VNViewController alloc] init];
+    [self.window makeKeyAndVisible];
+    
+    //return YES;
+    
     return YES;
 }
 							

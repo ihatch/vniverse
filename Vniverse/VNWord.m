@@ -35,11 +35,11 @@
         if(colorize) {
             self.textColor = [VNData colorForStar:starID];
         } else {
-            self.textColor = [UIColor colorWithRed:0.55 green:0.65 blue:0.75 alpha:1];
+            self.textColor = [UIColor colorWithRed:0.75 green:0.85 blue:0.95 alpha:1];
         }
         
         // Numbers...
-        if(size == 12) self.textColor = [UIColor colorWithWhite:0.5 alpha:1];
+        if(size == 12) self.textColor = [UIColor colorWithWhite:0.75 alpha:1];
         
         self.shadowOffset = CGSizeMake(1, 1);
         self.shadowColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:1];

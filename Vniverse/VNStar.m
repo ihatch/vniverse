@@ -77,13 +77,13 @@
     CGContextClosePath(context);
     
     if(!highlight) {
-        CGContextSetRGBFillColor(context, 1.0, 1.0, 1.0, 0.5);
+        CGContextSetRGBFillColor(context, 1.0, 1.0, 1.0, 0.6);
     } else {
-        CGContextSetRGBFillColor(context, 0.5, 0.5, 1.0, 0.5);
+        CGContextSetRGBFillColor(context, 0.5, 0.5, 1.0, 0.6);
     }
     
     CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
-    CGFloat components[] = {0.5, 0.5, 0.5, 0.8};
+    CGFloat components[] = {0.72, 0.7, 0.71, 0.7};
     CGColorRef color = CGColorCreate(colorspace, components);
     CGContextSetStrokeColorWithColor(context, color);
     CGContextDrawPath(context, kCGPathFillStroke);
