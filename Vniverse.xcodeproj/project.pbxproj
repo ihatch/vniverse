@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		077E4A7E20363C68006E491E /* v_icon1024.png in Resources */ = {isa = PBXBuildFile; fileRef = 077E4A7D20363C68006E491E /* v_icon1024.png */; };
+		077E4A8020363CC1006E491E /* v_icon167.png in Resources */ = {isa = PBXBuildFile; fileRef = 077E4A7F20363CC0006E491E /* v_icon167.png */; };
 		C628BA8F18AC252500CDAB78 /* VNStanzaLine.m in Sources */ = {isa = PBXBuildFile; fileRef = C628BA8E18AC252500CDAB78 /* VNStanzaLine.m */; };
 		C628BA9318AC4D7900CDAB78 /* VNConstellationView.m in Sources */ = {isa = PBXBuildFile; fileRef = C628BA9218AC4D7900CDAB78 /* VNConstellationView.m */; };
 		C628BA9818AC651000CDAB78 /* button_back.png in Resources */ = {isa = PBXBuildFile; fileRef = C628BA9718AC651000CDAB78 /* button_back.png */; };
@@ -60,6 +62,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		077E4A7D20363C68006E491E /* v_icon1024.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = v_icon1024.png; sourceTree = "<group>"; };
+		077E4A7F20363CC0006E491E /* v_icon167.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = v_icon167.png; sourceTree = "<group>"; };
 		C628BA8D18AC252500CDAB78 /* VNStanzaLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VNStanzaLine.h; sourceTree = "<group>"; };
 		C628BA8E18AC252500CDAB78 /* VNStanzaLine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VNStanzaLine.m; sourceTree = "<group>"; };
 		C628BA9118AC4D7900CDAB78 /* VNConstellationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VNConstellationView.h; sourceTree = "<group>"; };
@@ -247,6 +251,8 @@
 				C6A8B00418B710A0001D3C01 /* v_icon80.png */,
 				C6A8AFED18B6C44F001D3C01 /* v_icon76.png */,
 				C6A8AFEE18B6C44F001D3C01 /* v_icon152.png */,
+				077E4A7F20363CC0006E491E /* v_icon167.png */,
+				077E4A7D20363C68006E491E /* v_icon1024.png */,
 				C628BAA318AD55B200CDAB78 /* libTestFlight.a */,
 				C628BAA418AD55B200CDAB78 /* TestFlight.h */,
 				C628BAA518AD55B200CDAB78 /* TestFlight+AsyncLogging.h */,
@@ -330,7 +336,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = VN;
-				LastUpgradeCheck = 0510;
+				LastUpgradeCheck = 0920;
 				ORGANIZATIONNAME = "Ian Hatcher";
 				TargetAttributes = {
 					C6540DDA188B62EA00F26E48 = {
@@ -369,9 +375,11 @@
 				C6391C0A188E361800CCC1AD /* v-tercets.txt in Resources */,
 				C6A8AFF018B6C44F001D3C01 /* v_icon152.png in Resources */,
 				C6391C0C188E394E00CCC1AD /* v-stars.txt in Resources */,
+				077E4A7E20363C68006E491E /* v_icon1024.png in Resources */,
 				C6DE546F18BD4D78000A3DAB /* springgun2.png in Resources */,
 				C6540DF7188B62EA00F26E48 /* Images.xcassets in Resources */,
 				C6DE546B18BD4C07000A3DAB /* springgun.png in Resources */,
+				077E4A8020363CC1006E491E /* v_icon167.png in Resources */,
 				C6A8B00C18B7E8AB001D3C01 /* v_icon58.png in Resources */,
 				C6A8B00818B710A0001D3C01 /* v_icon80.png in Resources */,
 				C6A8B00618B710A0001D3C01 /* v_icon40.png in Resources */,
@@ -471,19 +479,31 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer: Ian Hatcher (6NSQ5G4H8K)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -496,7 +516,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PROVISIONING_PROFILE = "63D42988-C71B-45CA-AD6C-C08632162FA8";
 				SDKROOT = iphoneos;
@@ -512,26 +532,37 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer: Ian Hatcher (6NSQ5G4H8K)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PROVISIONING_PROFILE = "63D42988-C71B-45CA-AD6C-C08632162FA8";
 				SDKROOT = iphoneos;
@@ -551,6 +582,7 @@
 				GCC_PREFIX_HEADER = "Vniverse/Vniverse-Prefix.pch";
 				INFOPLIST_FILE = "Vniverse/Vniverse-Info.plist";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ihatch.vniverse;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 2;
@@ -569,6 +601,7 @@
 				GCC_PREFIX_HEADER = "Vniverse/Vniverse-Prefix.pch";
 				INFOPLIST_FILE = "Vniverse/Vniverse-Info.plist";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ihatch.vniverse;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 2;
@@ -592,6 +625,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "VniverseTests/VniverseTests-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.abra.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;
@@ -610,6 +644,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Vniverse/Vniverse-Prefix.pch";
 				INFOPLIST_FILE = "VniverseTests/VniverseTests-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.abra.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;

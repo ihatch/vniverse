@@ -35,7 +35,7 @@
         if(colorize) {
             self.textColor = [VNData colorForStar:starID];
         } else {
-            self.textColor = [UIColor colorWithRed:0.75 green:0.85 blue:0.95 alpha:1];
+            self.textColor = [UIColor colorWithRed:0.8 green:0.88 blue:0.97 alpha:1];
         }
         
         // Numbers...

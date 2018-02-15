@@ -373,7 +373,7 @@
     if(withConstellationColor) {
         color = [VNData circleColorForStar:starID];
     } else {
-        color = [UIColor colorWithRed:0.2 green:0.4 blue:0.8 alpha:0.4];
+        color = [UIColor colorWithRed:0.2 green:0.4 blue:0.8 alpha:0.5];
     }
     [self addGrowingCircleAtPoint:[VNData coordinatesForStar:starID] withColor:color];
 }

@@ -6,7 +6,8 @@
 #import <UIKit/UIKit.h>
 typedef enum { DRAW, CONSTELLATIONS, WAVETERCETS, ORACLE } appMode;
 
-@interface VNStarsView : UIView
+
+@interface VNStarsView : UIView <CAAnimationDelegate>
 
 - (void) initStars;
 - (void) startDrawingConstellation;

@@ -81,9 +81,9 @@ int stardateDestination;
 
 
 + (void) slowFadeBackground {
-    CGFloat r = 0.10 + (ABF(0.06));
-    CGFloat g = 0.05 + (ABF(0.06));
-    CGFloat b = 0.11 + (ABF(0.06));
+    CGFloat r = 0.12 + (ABF(0.06));
+    CGFloat g = 0.04 + (ABF(0.06));
+    CGFloat b = 0.14 + (ABF(0.06));
     
     [UIView animateWithDuration:15.9 delay:0 options:(UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionBeginFromCurrentState) animations:^{
         thisController.view.backgroundColor = [UIColor colorWithRed:r green:g blue:b alpha:0.90];
