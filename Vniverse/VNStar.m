@@ -87,6 +87,9 @@
     CGColorRef color = CGColorCreate(colorspace, components);
     CGContextSetStrokeColorWithColor(context, color);
     CGContextDrawPath(context, kCGPathFillStroke);
+
+    CGColorSpaceRelease(colorspace);
+    CGColorRelease(color);
 }
 
 @end
