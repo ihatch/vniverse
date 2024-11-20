@@ -269,14 +269,27 @@ int cachedScreenWidth;
     CGRect screenBounds = [UIScreen mainScreen].bounds;
     CGFloat width = CGRectGetWidth(screenBounds);
     CGFloat height = CGRectGetHeight(screenBounds);
-    UIInterfaceOrientation interfaceOrientation = [UIApplication sharedApplication].statusBarOrientation;
+//    UIInterfaceOrientation interfaceOrientation = [UIApplication sharedApplication].statusBarOrientation;
     
-    if(UIInterfaceOrientationIsPortrait(interfaceOrientation)){
-        screenBounds.size = CGSizeMake(width, height);
-    } else if(UIInterfaceOrientationIsLandscape(interfaceOrientation)){
-        screenBounds.size = CGSizeMake(height, width);
+    UIWindowScene *windowScene = (UIWindowScene *)[UIApplication sharedApplication].connectedScenes.anyObject;
+    if ([windowScene isKindOfClass:[UIWindowScene class]]) {
+        UIInterfaceOrientation orientation = windowScene.interfaceOrientation;
+        if (UIInterfaceOrientationIsLandscape(orientation)) {
+            NSLog(@"Landscape orientation");
+            screenBounds.size = CGSizeMake(height, width);
+
+        } else {
+            NSLog(@"Portrait orientation");
+            screenBounds.size = CGSizeMake(width, height);
+        }
     }
     
+//    if(UIInterfaceOrientationIsPortrait(interfaceOrientation)){
+//        screenBounds.size = CGSizeMake(width, height);
+//    } else if(UIInterfaceOrientationIsLandscape(interfaceOrientation)){
+//        screenBounds.size = CGSizeMake(height, width);
+//    }
+//    
     return screenBounds;
 }
 

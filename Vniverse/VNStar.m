@@ -59,7 +59,7 @@
         [UIView animateWithDuration:duration delay:delay options:(UIViewAnimationOptionCurveEaseInOut|UIViewAnimationOptionBeginFromCurrentState) animations:^{
             self.alpha = 1;
         } completion:^(BOOL finished) {
-            isHidden = false;
+            self->isHidden = false;
         }];
     }];
 }

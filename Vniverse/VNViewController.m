@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Ian Hatcher. All rights reserved.
 //
 
+#import <WebKit/WebKit.h>
+
 #import "VNViewController.h"
 #import "VNData.h"
 #import "VNStar.h"
@@ -26,7 +28,8 @@ VNBlackCurtain *curtain;
 CGRect screenBounds, scrollBounds, inScrollBounds;
 UIScrollView *scrollView;
 UIView *topBarView, *textView, *constellationsModal, *oracleModal, *infoModal;
-UIWebView *infoView;
+WKWebView *infoView;
+
 UIButton *activeNavButton, *clearButton, *drawButton, *consButton, *waveButton, *oracleButton, *infoButton;
 UIColor *normalColor, *selectedColor, *standardBackColor, *initBackColor;
 NSArray *oracleQuestions;
@@ -154,7 +157,7 @@ int stardateDestination;
     [button setTitleColor:selectedColor forState:UIControlStateSelected];
     [button setTitleColor:selectedColor forState:UIControlStateHighlighted];
     [button setClipsToBounds:YES];
-    [button setTitleEdgeInsets:UIEdgeInsetsZero];
+//    [button setTitleEdgeInsets:UIEdgeInsetsZero];
     [button setBackgroundImage:[UIImage imageNamed:@"button_back.png"] forState:UIControlStateNormal];
     [button setBackgroundImage:[UIImage imageNamed:@"button_back_bright.png"] forState:UIControlStateHighlighted];
     [button setBackgroundImage:[UIImage imageNamed:@"button_back_bright.png"] forState:UIControlStateSelected];
@@ -383,23 +386,30 @@ int stardateDestination;
 - (UIView *) infoModal {
     
     UIView *modal = [self createModalWithWidth:910 andHeight:660];
-
-    infoView = [[UIWebView alloc] initWithFrame:CGRectMake(30, 20, 850, 610)];
     
+    
+    infoView = [[WKWebView alloc] initWithFrame:CGRectMake(30, 20, 850, 610)];
+
+    // Load the HTML file from the bundle
     NSString *infoPath = [[NSBundle mainBundle] pathForResource:@"info" ofType:@"html"];
     if (infoPath) {
-        NSData *htmlData = [NSData dataWithContentsOfFile:infoPath];
-        [infoView loadData:htmlData MIMEType:@"text/html" textEncodingName:@"utf-8" baseURL:[[NSBundle mainBundle] bundleURL]];
+        NSURL *fileURL = [NSURL fileURLWithPath:infoPath];
+        [infoView loadFileURL:fileURL allowingReadAccessToURL:[[NSBundle mainBundle] bundleURL]];
     }
+
+    // Disable scrolling and bouncing
     infoView.scrollView.scrollEnabled = NO;
     infoView.scrollView.bounces = NO;
-    [infoView setBackgroundColor:[UIColor clearColor]];
-    [infoView setOpaque: NO];
-    
-    infoView.delegate = self;
-    
-    [modal addSubview:infoView];
 
+    // Set the background color to clear and make it non-opaque
+    infoView.backgroundColor = [UIColor clearColor];
+    infoView.opaque = NO;
+
+//    // Set the navigation delegate if needed
+//    infoView.navigationDelegate = self;
+
+    // Add the WKWebView to the modal view
+    [modal addSubview:infoView];
     int x = 760, y = 590, w = 110, h = 40;
     UIButton *b = [self createButtonWithFrame:CGRectMake(x, y, w, h) title:@"Close" tag:CLOSE];
     [modal addSubview:b];
@@ -532,14 +542,14 @@ int stardateDestination;
     // Dispose of any resources that can be recreated.
 }
 
-
--(BOOL) webView:(UIWebView *)inWeb shouldStartLoadWithRequest:(NSURLRequest *)inRequest navigationType:(UIWebViewNavigationType)inType {
-    if ( inType == UIWebViewNavigationTypeLinkClicked ) {
-        [[UIApplication sharedApplication] openURL:[inRequest URL]];
-        return NO;
-    }
-    
-    return YES;
-}
+//
+//-(BOOL) webView:(UIWebView *)inWeb shouldStartLoadWithRequest:(NSURLRequest *)inRequest navigationType:(UIWebViewNavigationType)inType {
+//    if ( inType == UIWebViewNavigationTypeLinkClicked ) {
+//        [[UIApplication sharedApplication] openURL:[inRequest URL]];
+//        return NO;
+//    }
+//
+//    return YES;
+//}
 
 @end
