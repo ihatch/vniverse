@@ -11,10 +11,7 @@
 
 @interface VNViewController : UIViewController <WKNavigationDelegate>
 
-@property NSTimer *backgroundTimer;
-
 + (void) suspendTimers;
 + (void) resumeTimers;
-+ (void) slowFadeBackground;
 
 @end

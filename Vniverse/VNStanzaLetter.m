@@ -13,7 +13,7 @@
 
 @synthesize width, startPoint;
 
-- (id) initWithFrame:(CGRect)frame letter:(NSString *)letter view:(UIView *)view italic:(BOOL)italic {
+- (id) initWithFrame:(CGRect)frame letter:(NSString *)letter view:(UIView *)view italic:(BOOL)italic scale:(CGFloat)scale {
     if(self = [super initWithFrame:frame]) {
         self.text = letter;
         if([letter isEqualToString:@"_"]) {
@@ -22,9 +22,9 @@
             self.text = emdash;
         }
         if(italic) {
-            self.font = [UIFont fontWithName:@"EuphemiaUCAS-Italic" size:15];
+            self.font = [UIFont fontWithName:@"EuphemiaUCAS-Italic" size:15 * scale];
         } else {
-            self.font = [UIFont fontWithName:@"EuphemiaUCAS" size:15];
+            self.font = [UIFont fontWithName:@"EuphemiaUCAS" size:15 * scale];
         }
         self.textColor = [UIColor colorWithWhite:1.0 alpha:1];
         self.shadowColor = [UIColor colorWithWhite:0 alpha:0.9];
@@ -42,7 +42,7 @@
     CGSize size = [self.text sizeWithAttributes:@{NSFontAttributeName:self.font}];
     CGRect frame = self.frame;
     frame.size = size;
-    frame.size.height = frame.size.height + 10;
+    frame.size.height = frame.size.height + 10 * (self.font.pointSize / 15);
     self.frame = frame;
     self.width = size.width;
 }

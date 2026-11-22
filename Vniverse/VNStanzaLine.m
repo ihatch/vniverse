@@ -13,7 +13,7 @@
 
 @synthesize letters, lineLetters, lineWidth;
 
-- (id) initWithLetters:(NSArray *)textLetters andYPosition:(CGFloat)yPosition andView:(UIView *)view {
+- (id) initWithLetters:(NSArray *)textLetters andYPosition:(CGFloat)yPosition andView:(UIView *)view scale:(CGFloat)scale {
     
     BOOL isItalic = NO;
     NSMutableArray *ls = [NSMutableArray array];
@@ -24,7 +24,7 @@
                 isItalic = isItalic ? NO : YES;
                 continue;
             }
-            VNStanzaLetter *l = [[VNStanzaLetter alloc] initWithFrame:CGRectMake(0, yPosition, 20, 10) letter:textLetters[i] view:view italic:isItalic];
+            VNStanzaLetter *l = [[VNStanzaLetter alloc] initWithFrame:CGRectMake(0, yPosition, 20, 10) letter:textLetters[i] view:view italic:isItalic scale:scale];
             [ls addObject:l];
         }
         self.lineLetters = [NSArray arrayWithArray:ls];

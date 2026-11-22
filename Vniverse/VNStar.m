@@ -73,10 +73,11 @@
 - (void)drawRect:(CGRect)rect {
     
     CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextSetLineWidth(context, 1.0);
+    CGFloat comp = [VNData markScale];   // grows with the field, never below a visible size
+    CGContextSetLineWidth(context, 1.0 * comp);
     
     CGContextBeginPath(context);
-    CGContextAddArc(context, 6, 6, starRadius, 0, 2*M_PI, YES);
+    CGContextAddArc(context, 6, 6, starRadius * comp, 0, 2*M_PI, YES);
     CGContextClosePath(context);
     
     if(!highlight) {

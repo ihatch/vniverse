@@ -16,12 +16,16 @@
 }
 
 - (id)initWithFrame:(CGRect)frame string:(NSString *)string starID:(int)starID size:(CGFloat)size colorize:(BOOL)colorize {
+    return [self initWithFrame:frame string:string starID:starID size:size colorize:colorize scale:1.0];
+}
+
+- (id)initWithFrame:(CGRect)frame string:(NSString *)string starID:(int)starID size:(CGFloat)size colorize:(BOOL)colorize scale:(CGFloat)scale {
     if(self = [super initWithFrame:frame]) {
 
         dead = NO;
         self.userInteractionEnabled = NO;
         
-        self.font = [UIFont fontWithName:@"EuphemiaUCAS" size:size];
+        self.font = [UIFont fontWithName:@"EuphemiaUCAS" size:size * scale];
         self.text = string;
 
         // Non-star labels

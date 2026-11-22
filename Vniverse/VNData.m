@@ -170,16 +170,15 @@ static NSDictionary *maps;
 }
 
 
+// point is in on-screen star-view coordinates.
 + (int) closestStarToPoint:(CGPoint)point {
     
     int closestStarID = 0;
-    int closestDistance = 99999;
+    double closestDistance = DBL_MAX;
     for(int i=1; i<[stars count]; i++){
-        NSDictionary *star = stars[i];
-        int starX = [[star objectForKey:@"x"] intValue];
-        int starY = [[star objectForKey:@"y"] intValue];
-        double dx = (starX - point.x);
-        double dy = (starY - point.y);
+        CGPoint p = [VNData pointForStar:i];
+        double dx = (p.x - point.x);
+        double dy = (p.y - point.y);
         double dist = sqrt(dx*dx + dy*dy);
         if(dist < closestDistance ) {
             closestStarID = i;
@@ -242,6 +241,32 @@ static NSDictionary *maps;
 
 + (NSArray *) allStars {
     return stars;
+}
+
+
+
+///////////////////
+// DISPLAY SCALE //
+///////////////////
+
+static CGFloat scaleX = 1.0, scaleY = 1.0;
+static const CGFloat kMinMarkScale = 0.75;
+
++ (void) setFieldScaleX:(CGFloat)sx y:(CGFloat)sy {
+    if (sx > 0) scaleX = sx;
+    if (sy > 0) scaleY = sy;
+}
+
++ (CGFloat) fieldScaleX { return scaleX; }
++ (CGFloat) fieldScaleY { return scaleY; }
+
++ (CGPoint) pointForStar:(int)n {
+    CGPoint c = [VNData coordinatesForStar:n];
+    return CGPointMake(c.x * scaleX, c.y * scaleY);
+}
+
++ (CGFloat) markScale {
+    return MAX(MIN(scaleX, scaleY), kMinMarkScale);
 }
 
 

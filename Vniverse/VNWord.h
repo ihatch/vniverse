@@ -12,6 +12,8 @@
 @interface VNWord : UILabel
 
 - (id) initWithFrame:(CGRect)frame string:(NSString *)string starID:(int)starID size:(CGFloat)size colorize:(BOOL)colorize;
+// size is the nominal point size; scale multiplies it for the current screen.
+- (id) initWithFrame:(CGRect)frame string:(NSString *)string starID:(int)starID size:(CGFloat)size colorize:(BOOL)colorize scale:(CGFloat)scale;
 - (void) selfDestructAfterXSeconds:(CGFloat)seconds;
 - (void) selfDestruct;
 

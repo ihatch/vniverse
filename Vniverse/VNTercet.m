@@ -18,12 +18,16 @@
     NSMutableArray *lines;
     VNWord *numberLabel;
     VNWord *wordLabel;
+    CGFloat scale;
+    CGSize containerSize;
 }
 
 @synthesize tercetWidth;
 
-- (id) initWithFrame:(CGRect)frame andTercet:(int)starNumber {
-    if(self = [super initWithFrame:frame]) {
+- (id) initWithOrigin:(CGPoint)origin tercet:(int)starNumber scale:(CGFloat)textScale bounds:(CGSize)bounds {
+    if(self = [super initWithFrame:CGRectMake(origin.x, origin.y, 200 * textScale, 100 * textScale)]) {
+        scale = textScale;
+        containerSize = bounds;
         self.tercetWidth = 0;
         starID = starNumber;
         lines = [NSMutableArray array];
@@ -38,21 +42,21 @@
 - (void) initNumber {
     CGRect wordRect = CGRectMake(0, 0, 10, 10);
     NSString *str = [NSString stringWithFormat:@"%d", starID];
-    numberLabel = [[VNWord alloc] initWithFrame:wordRect string:str starID:starID size:12 colorize:YES];
+    numberLabel = [[VNWord alloc] initWithFrame:wordRect string:str starID:starID size:12 colorize:YES scale:scale];
     [self addSubview:numberLabel];
 
 }
 
 - (void) initWord {
-    CGRect wordRect = CGRectMake(0, 18, 10, 10);
-    wordLabel = [[VNWord alloc] initWithFrame:wordRect string:[VNData wordForStar:starID] starID:starID size:15 colorize:YES];
+    CGRect wordRect = CGRectMake(0, 18 * scale, 10, 10);
+    wordLabel = [[VNWord alloc] initWithFrame:wordRect string:[VNData wordForStar:starID] starID:starID size:15 colorize:YES scale:scale];
     [self addSubview:wordLabel];
 }
 
 
 - (void) initLines {
     
-    int y = 40;
+    CGFloat y = 40 * scale;
     for(int i=0; i<[tercetText count]; i++) {
         NSString *str = tercetText[i];
         // Split into whole characters. (The old "%c" format kept only the low
@@ -64,25 +68,21 @@
                              usingBlock:^(NSString *ch, NSRange r, NSRange er, BOOL *stop) {
             [characters addObject:ch];
         }];
-        VNStanzaLine *line = [[VNStanzaLine alloc] initWithLetters:characters andYPosition:y andView:self];
+        VNStanzaLine *line = [[VNStanzaLine alloc] initWithLetters:characters andYPosition:y andView:self scale:scale];
         if(line.lineWidth > self.tercetWidth) self.tercetWidth = line.lineWidth;
         [lines addObject:line];
-        y += 22;
+        y += 22 * scale;
     }
     
-    // check location to avoid clipping
-    CGFloat totalX = self.frame.origin.x + self.tercetWidth;
-    CGFloat totalY = self.frame.origin.y + 66;
-
-    if(totalX > 1024) {
-        CGFloat offsetX = 1024 - totalX - 10;
-        self.frame = CGRectOffset(self.frame, offsetX, 0);
-    }
-
-    if(totalY > 630) {
-        CGFloat offsetY = 630 - totalY - 12;
-        self.frame = CGRectOffset(self.frame, 0, offsetY);
-    }
+    // Keep the whole tercet inside the containing view.
+    CGRect f = self.frame;
+    CGFloat blockHeight = 110 * scale;
+    CGFloat margin = 8;
+    if (f.origin.x + self.tercetWidth > containerSize.width - margin) f.origin.x = containerSize.width - margin - self.tercetWidth;
+    if (f.origin.x < margin) f.origin.x = margin;
+    if (f.origin.y + blockHeight > containerSize.height - margin) f.origin.y = containerSize.height - margin - blockHeight;
+    if (f.origin.y < 0) f.origin.y = 0;
+    self.frame = f;
 }
 
 

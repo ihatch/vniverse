@@ -19,7 +19,6 @@
     int lastPathStarID;
     VNWord *currentStarNumber;
     VNTercet *activeTercet;
-    VNTextView *textView;
     
     NSMutableArray *highlightedStars;
     NSMutableArray *constellations;
@@ -47,9 +46,6 @@
         constellations = [NSMutableArray array];
         highlightedStars = [NSMutableArray array];
         pendingTimers = [NSMutableArray array];
-
-        textView = [[VNTextView alloc] initWithFrame:self.bounds];
-        [self addSubview:textView];
     }
     return self;
 }
@@ -69,17 +65,29 @@
     
     for(int i=1; i<[stars count]; i++){
         
-        NSDictionary *s = [stars objectAtIndex:i];
-        int starX = [[s objectForKey:@"x"] intValue];
-        int starY = [[s objectForKey:@"y"] intValue];
-        
-        VNStar *star = [[VNStar alloc] initWithFrame:CGRectMake(starX, starY, 12, 12) starID:i x:starX y:starY];
+        CGPoint p = [VNData pointForStar:i];
+        VNStar *star = [[VNStar alloc] initWithFrame:CGRectMake(0, 0, 12, 12) starID:i x:p.x y:p.y];
         [starObjs addObject:star];
         [self addSubview:star];
     }
 
     starObjects = [NSArray arrayWithArray:starObjs];
-    [self bringSubviewToFront:textView];
+}
+
+// Reposition and redraw stars and constellation lines after the field
+// size or stretch changes.
+- (void) refreshForDisplayScale {
+    for (int i=1; i<[starObjects count]; i++) {
+        VNStar *star = starObjects[i];
+        star.center = [VNData pointForStar:i];
+        [star setNeedsDisplay];
+    }
+    NSMutableArray *views = [NSMutableArray arrayWithArray:constellations];
+    if (activeConstellation) [views addObject:activeConstellation];
+    for (VNConstellationView *c in views) {
+        c.frame = self.bounds;
+        [c setNeedsDisplay];
+    }
 }
 
 - (void) highlightStar:(VNStar *)star {
@@ -132,7 +140,6 @@
     canonConstellation = [VNData constellationForStar:tercet];
     [self showCanonConstellationBehindTercet:canonConstellation];
 
-    [self bringSubviewToFront:textView];
     currentTercet = tercet;
     [self showTercet:tercet];
     [self startTercetsTimer];
@@ -155,7 +162,7 @@
 
 
 - (void) showTercet:(int)tercet {
-    [textView showTercet:tercet];
+    [self.textView showTercet:tercet];
     [self addGrowingCircleForStar:tercet withConstellationColor:YES];
 }
 
@@ -190,19 +197,19 @@
 
 - (void) showAllNumbers {
     [self clearScreen];
-    [textView showAllNumbers];
+    [self.textView showAllNumbers];
 }
 
 - (void) showRandomStarWord {
-    [textView showWordForStar:[self randomStarNumber]];
+    [self.textView showWordForStar:[self randomStarNumber]];
 }
 
 - (void) showRandomStarWordInColor {
-    [textView showWordInColorForStar:[self randomStarNumber]];
+    [self.textView showWordInColorForStar:[self randomStarNumber]];
 }
 
 - (void) showRandomStarWordQuick {
-    [textView showQuickWordForStar:[self randomStarNumber]];
+    [self.textView showQuickWordForStar:[self randomStarNumber]];
 }
 
 
@@ -216,7 +223,7 @@
     int starID = [VNData closestStarToPoint:point];
 
     if(mode == DRAW) {
-        [textView showWordForStar:starID];
+        [self.textView showWordForStar:starID];
         [self addGrowingCircleForStar:starID withConstellationColor:NO];
     }
 
@@ -265,7 +272,7 @@
     if(starID == lastPathStarID) return;
 
     [self addGrowingCircleForStar:starID withConstellationColor:NO];
-    [textView showWordForStar:starID];
+    [self.textView showWordForStar:starID];
     [self registerStarInConstellation:starID];
 }
 
@@ -294,7 +301,7 @@
     [self clearStarHighlights];
     [self stopTercetsTimer];
     [self cancelPendingTimers];
-    [textView clearAllText];
+    [self.textView clearAllText];
     [self setNeedsDisplay];
     currentTercet = 0;
 }
@@ -346,7 +353,7 @@
     [self registerStarInConstellation:a];
     [self registerStarInConstellation:b];
     
-    [textView showTwoTercets:a and:b];
+    [self.textView showTwoTercets:a and:b];
     
 }
 
@@ -354,7 +361,7 @@
 - (void) showOracleAnswer {
 
     [self clearAllConstellations];
-    [textView showTercet:[self randomStarNumber]];
+    [self.textView showTercet:[self randomStarNumber]];
     
     int n = ABI(3) + 2;
     for(int i=0; i<n; i++){
@@ -362,7 +369,7 @@
         [self scheduleOneShot:t target:self selector:@selector(showRandomStarWord)];
     }
 
-    [self scheduleOneShot:8.5 target:textView selector:@selector(clearTercet)];
+    [self scheduleOneShot:8.5 target:self.textView selector:@selector(clearTercet)];
 }
 
 
@@ -390,7 +397,7 @@
     } else {
         color = [UIColor colorWithRed:0.2 green:0.4 blue:0.8 alpha:0.5];
     }
-    [self addGrowingCircleAtPoint:[VNData coordinatesForStar:starID] withColor:color];
+    [self addGrowingCircleAtPoint:[VNData pointForStar:starID] withColor:color];
 }
 
 
@@ -398,7 +405,8 @@
     
     // create a circle path
     CGMutablePathRef circlePath = CGPathCreateMutable();
-    CGPathAddArc(circlePath, NULL, 0.f, 0.f, 7.f, 0.f, (float)2.f*M_PI, true);
+    CGFloat comp = [VNData markScale];
+    CGPathAddArc(circlePath, NULL, 0.f, 0.f, 7.f * comp, 0.f, (float)2.f*M_PI, true);
     
     // create a shape layer
     CAShapeLayer* layer = [[CAShapeLayer alloc] init];
@@ -410,6 +418,7 @@
     // set up the attributes of the shape layer and add it to our view's layer
     layer.fillColor = [[UIColor clearColor] CGColor];
     layer.strokeColor = [color CGColor];
+    layer.lineWidth = comp;
     layer.position = point;
     layer.anchorPoint = CGPointMake(.5f, .5f);
 

@@ -10,7 +10,7 @@
 
 @interface VNStanzaLine : NSObject
 
-- (id) initWithLetters:(NSArray *)textLetters andYPosition:(CGFloat)yPosition andView:(UIView *)view;
+- (id) initWithLetters:(NSArray *)textLetters andYPosition:(CGFloat)yPosition andView:(UIView *)view scale:(CGFloat)scale;
 - (void) selfDestruct;
 
 @property (nonatomic) NSArray *letters;

@@ -26,5 +26,18 @@ int ABI(int max);
 + (UIColor *) colorForStar:(int)n;
 + (UIColor *) circleColorForStar:(int)n;
 
+// Star coordinates are authored in a fixed 1024 x 688 space. On screen they
+// are mapped with separate horizontal and vertical scales (phones stretch the
+// field sideways a little). pointForStar: and closestStarToPoint: use the
+// mapped, on-screen coordinates of the star view.
++ (void) setFieldScaleX:(CGFloat)sx y:(CGFloat)sy;
++ (CGFloat) fieldScaleX;
++ (CGFloat) fieldScaleY;
++ (CGPoint) pointForStar:(int)n;
+
+// Size multiplier for star dots, constellation lines and tap rings: follows
+// the field scale but never drops below a clearly visible size.
++ (CGFloat) markScale;
+
 
 @end

@@ -7,6 +7,7 @@
 //
 
 #import "VNConstellationView.h"
+#import "VNData.h"
 
 @implementation VNConstellationView
 
@@ -37,7 +38,7 @@
 - (void) drawRect:(CGRect)rect {
     
     CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextSetLineWidth(context, 2.0);
+    CGContextSetLineWidth(context, 2.0 * [VNData markScale]);
     CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
     CGFloat components[] = { 0.5, 0.6, 0.7, 0.7 };
     CGColorRef color = CGColorCreate(colorspace, components);

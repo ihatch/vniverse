@@ -8,7 +8,14 @@
 
 #import <UIKit/UIKit.h>
 
+// Shows words, numbers and tercets over the star field. It is not scaled with
+// the field: star positions come from VNData pointForStar: offset by
+// fieldOrigin (where the star view sits within this view), and text is drawn
+// at textScale, which never drops below a readable size.
 @interface VNTextView : UIView
+
+@property (nonatomic) CGPoint fieldOrigin;
+@property (nonatomic) CGFloat textScale;
 
 - (void) showNumberForStar:(int)starID;
 - (void) showWordForStar:(int)starID;

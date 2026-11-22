@@ -13,7 +13,7 @@
 @property (nonatomic) CGPoint startPoint;
 @property (nonatomic) CGFloat width;
 
-- (id) initWithFrame:(CGRect)frame letter:(NSString *)letter view:(UIView *)view italic:(BOOL)italic;
+- (id) initWithFrame:(CGRect)frame letter:(NSString *)letter view:(UIView *)view italic:(BOOL)italic scale:(CGFloat)scale;
 - (void) setXPosition:(CGFloat)x;
 - (void) animateIn;
 - (void) selfDestruct;
