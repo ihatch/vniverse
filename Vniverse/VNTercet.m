@@ -55,11 +55,15 @@
     int y = 40;
     for(int i=0; i<[tercetText count]; i++) {
         NSString *str = tercetText[i];
+        // Split into whole characters. (The old "%c" format kept only the low
+        // byte of each character, which dropped or garbled curly quotes,
+        // accented letters and other non-ASCII text.)
         NSMutableArray *characters = [[NSMutableArray alloc] initWithCapacity:[str length]];
-        for (int i=0; i < [str length]; i++) {
-            NSString *ichar  = [NSString stringWithFormat:@"%c", [str characterAtIndex:i]];
-            [characters addObject:ichar];
-        }
+        [str enumerateSubstringsInRange:NSMakeRange(0, [str length])
+                                options:NSStringEnumerationByComposedCharacterSequences
+                             usingBlock:^(NSString *ch, NSRange r, NSRange er, BOOL *stop) {
+            [characters addObject:ch];
+        }];
         VNStanzaLine *line = [[VNStanzaLine alloc] initWithLetters:characters andYPosition:y andView:self];
         if(line.lineWidth > self.tercetWidth) self.tercetWidth = line.lineWidth;
         [lines addObject:line];
@@ -90,8 +94,8 @@
 - (void) selfDestruct {
     if(numberLabel) [numberLabel selfDestruct];
     if(wordLabel) [wordLabel selfDestruct];
-    for(int i=0; i<3; i++) {
-        [lines[i] selfDestruct];
+    for (VNStanzaLine *line in lines) {
+        [line selfDestruct];
     }
     [NSTimer scheduledTimerWithTimeInterval:10.0f target:self selector:@selector(die) userInfo:nil repeats:NO];
 }

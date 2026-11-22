@@ -12,9 +12,8 @@
 #import "VNTercet.h"
 #import "VNData.h"
 
-VNTercet *activeTercet;
-VNTercet *secondaryTercet;
-NSMutableArray *numberLabels;
+static VNTercet *activeTercet;
+static VNTercet *secondaryTercet;
 
 @implementation VNTextView
 
@@ -26,6 +25,9 @@ NSMutableArray *numberLabels;
     return self;
 }
 
+- (BOOL)canBecomeFocused {
+    return NO;
+}
 
 - (void) showNumberForStar:(int)starID {
     
@@ -38,6 +40,7 @@ NSMutableArray *numberLabels;
     
     [self addSubview:newWord];
     [[self superview] bringSubviewToFront:self];
+    
 }
 
 - (void) showWordInColorForStar:(int)starID {
@@ -54,9 +57,10 @@ NSMutableArray *numberLabels;
     VNWord *newWord = [[VNWord alloc] initWithFrame:wordRect string:[VNData wordForStar:starID] starID:starID size:15 colorize:YES];
     [newWord selfDestructAfterXSeconds:5];
     
+    
     [self addSubview:newWord];
     [[self superview] bringSubviewToFront:self];
-
+    
     
 }
 
@@ -84,8 +88,10 @@ NSMutableArray *numberLabels;
     VNWord *newWord = [[VNWord alloc] initWithFrame:wordRect string:[VNData wordForStar:starID] starID:starID size:15 colorize:NO];
     [newWord selfDestructAfterXSeconds:after];
     
+
     [self addSubview:newWord];
     [[self superview] bringSubviewToFront:self];
+
 
 }
 
@@ -114,39 +120,43 @@ NSMutableArray *numberLabels;
 
 
 - (void) showTercet:(int)tercet {
-
+    
     if(activeTercet) [activeTercet selfDestruct];
     if(secondaryTercet) [secondaryTercet selfDestruct];
- 
+    
     CGPoint point = [VNData coordinatesForStar:tercet];
     
-//    if(point.y > 600) point.y -= 100;
-//    if(point.x > 900) point.x -= 100;
-//    if(point.x > 900) point.x -= 100;
+    //    if(point.y > 600) point.y -= 100;
+    //    if(point.x > 900) point.x -= 100;
+    //    if(point.x > 900) point.x -= 100;
     
     activeTercet = [[VNTercet alloc] initWithFrame:CGRectMake(point.x + 13, point.y - 34, 200, 100) andTercet:tercet];
-
+        
     [self addSubview:activeTercet];
     [self bringSubviewToFront:activeTercet];
     [[self superview] bringSubviewToFront:self];
+
+    
 }
 
 
 - (void) showTwoTercets:(int)a and:(int)b {
     
+    [self clearTercet];
+
     CGPoint pointA = [VNData coordinatesForStar:a];
     CGPoint pointB = [VNData coordinatesForStar:b];
     
     activeTercet = [[VNTercet alloc] initWithFrame:CGRectMake(pointA.x + 13, pointA.y - 34, 200, 100) andTercet:a];
     secondaryTercet = [[VNTercet alloc] initWithFrame:CGRectMake(pointB.x + 13, pointB.y - 34, 200, 100) andTercet:b];
     
+
     [self addSubview:activeTercet];
     [self addSubview:secondaryTercet];
     [self bringSubviewToFront:activeTercet];
     [self bringSubviewToFront:secondaryTercet];
 
     [[self superview] bringSubviewToFront:self];
-    
 }
 
 

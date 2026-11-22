@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Ian Hatcher. All rights reserved.
 //
 
-#import <WebKit/WebKit.h>
-
 #import "VNViewController.h"
 #import "VNData.h"
 #import "VNStar.h"
@@ -17,23 +15,27 @@
 #import "VNBlackCurtain.h"
 
 typedef enum { MODE, CONSTELLATION, ORACLEQUESTION, STARDATE, CLOSE } buttonType;
-appMode currentMode;
 
-VNViewController *thisController;
-VNData *data;
-VNStarsView *starsView;
-VNWord *sliderValueDisplay;
-VNBlackCurtain *curtain;
+// The star field is authored in a fixed 1024 x 688 coordinate space (the sky
+// area of the original iPad screen). It is scaled to fit whatever space the
+// current device or window offers, so every star keeps its relative position.
+static const CGFloat kSkyWidth = 1024;
+static const CGFloat kSkyHeight = 688;
+static const CGFloat kTopBarHeight = 60;
 
-CGRect screenBounds, scrollBounds, inScrollBounds;
-UIScrollView *scrollView;
-UIView *topBarView, *textView, *constellationsModal, *oracleModal, *infoModal;
-WKWebView *infoView;
+static appMode currentMode;
 
-UIButton *activeNavButton, *clearButton, *drawButton, *consButton, *waveButton, *oracleButton, *infoButton;
-UIColor *normalColor, *selectedColor, *standardBackColor, *initBackColor;
-NSArray *oracleQuestions;
-int stardateDestination;
+static VNViewController *thisController;
+static VNStarsView *starsView;
+static VNWord *sliderValueDisplay;
+static VNBlackCurtain *curtain;
+
+static UIView *skyView, *topBarView;
+static WKWebView *infoView;
+
+static UIButton *activeNavButton, *clearButton, *drawButton, *consButton, *waveButton, *oracleButton, *infoButton;
+static UIColor *normalColor, *selectedColor, *standardBackColor, *initBackColor;
+static int stardateDestination;
 
 @implementation VNViewController
 
@@ -48,33 +50,51 @@ int stardateDestination;
     [super viewDidLoad];
     thisController = self;
     
-    screenBounds = CGRectMake(0, 0, 1024, 768);
-    scrollBounds = CGRectMake(0, 80, 1024, 688);
-    inScrollBounds = CGRectMake(0, 0, 1024, 688);
-    
     normalColor = [UIColor colorWithRed:0.65 green:0.75 blue:0.85 alpha:1];
     selectedColor = [UIColor colorWithRed:0.8 green:0.9 blue:1.0 alpha:1];
     standardBackColor = [UIColor colorWithRed:0.25 green:0.13 blue:0.25 alpha:0.8];
     initBackColor = [UIColor colorWithRed:0.14 green:0.09 blue:0.15 alpha:0.90];
-    
-
-    oracleQuestions = @[@"Whose body?",
-                        @"How to know?",
-                        @"Why care?",
-                        @"What do I love?",
-                        @"Where to build a bridge?",
-                        @"When did you say?",
-                        @"Which one?"];
 
     self.view.backgroundColor = initBackColor;
     currentMode = DRAW;
 
-    [self initScrollView];
+    [self initSkyView];
     [self initStarsView];
     [self initTopBarView];
-        
-    self.backgroundTimer = [NSTimer scheduledTimerWithTimeInterval:16.0 target:thisController selector:@selector(slowFadeBackground) userInfo:nil repeats:YES];
+
+    [self startBackgroundTimer];
     [self slowFadeBackground];
+}
+
+
+- (UIStatusBarStyle) preferredStatusBarStyle {
+    return UIStatusBarStyleLightContent;
+}
+
+
+- (BOOL) prefersHomeIndicatorAutoHidden {
+    return YES;
+}
+
+
+// Lay everything out against the real view size and safe area, instead of
+// assuming a 1024 x 768 screen with a 20pt status bar.
+- (void) viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+
+    CGRect bounds = self.view.bounds;
+    UIEdgeInsets safe = self.view.safeAreaInsets;
+
+    topBarView.frame = CGRectMake(0, safe.top, bounds.size.width, kTopBarHeight);
+    [self layoutTopButtons];
+
+    CGFloat skyTop = CGRectGetMaxY(topBarView.frame);
+    skyView.frame = CGRectMake(0, skyTop, bounds.size.width, bounds.size.height - skyTop - safe.bottom);
+
+    CGFloat scale = MIN(skyView.bounds.size.width / kSkyWidth, skyView.bounds.size.height / kSkyHeight);
+    if (scale <= 0) scale = 1;
+    starsView.transform = CGAffineTransformMakeScale(scale, scale);
+    starsView.center = CGPointMake(CGRectGetMidX(skyView.bounds), CGRectGetMidY(skyView.bounds));
 }
 
 
@@ -93,49 +113,53 @@ int stardateDestination;
     } completion:^(BOOL finished) {}];
 }
 
+- (void) startBackgroundTimer {
+    [self.backgroundTimer invalidate];
+    self.backgroundTimer = [NSTimer scheduledTimerWithTimeInterval:16.0 target:self selector:@selector(slowFadeBackground) userInfo:nil repeats:YES];
+}
+
 + (void) suspendTimers {
     [thisController.backgroundTimer invalidate];
+    thisController.backgroundTimer = nil;
     [starsView suspendTimers];
 }
 
 + (void) resumeTimers {
-    thisController.backgroundTimer = [NSTimer scheduledTimerWithTimeInterval:16.0 target:self selector:@selector(slowFadeBackground) userInfo:nil repeats:YES];
+    // Also runs once at launch, so restart rather than add a second timer.
+    [thisController startBackgroundTimer];
     [starsView resumeTimers];
 }
 
 
 - (void) initTopBarView {
-    topBarView = [[UIView alloc] initWithFrame:CGRectMake(0, 20, 1024, 60)];
+    topBarView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kSkyWidth, kTopBarHeight)];
     topBarView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.2];
     [self.view addSubview:topBarView];
     [self initTopButtons];
 }
 
 
-- (void) initScrollView {
+// Plain container for the sky. (This used to be a UIScrollView, but with
+// zoom locked at 1.0 and no content size it never scrolled or zoomed.)
+- (void) initSkyView {
     
-    scrollView = [[UIScrollView alloc] initWithFrame:scrollBounds];
-    scrollView.maximumZoomScale = 1.0f;
-    scrollView.minimumZoomScale = 1.0f;
-    scrollView.delegate = self;
-    scrollView.panGestureRecognizer.minimumNumberOfTouches = 1;
-    scrollView.bouncesZoom = NO;
-    scrollView.bounces = NO;
+    skyView = [[UIView alloc] initWithFrame:CGRectMake(0, kTopBarHeight, kSkyWidth, kSkyHeight)];
+    skyView.clipsToBounds = NO;
     
     UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(respondToLongPressGesture:)];
     longPress.minimumPressDuration = 0.005;
-    [scrollView addGestureRecognizer:longPress];
+    [skyView addGestureRecognizer:longPress];
 
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(respondToTapGesture:)];
-    [scrollView addGestureRecognizer:tap];
+    [skyView addGestureRecognizer:tap];
 
-    [self.view addSubview:scrollView];
+    [self.view addSubview:skyView];
 }
 
 
 - (void) initStarsView {
-    starsView = [[VNStarsView alloc] initWithFrame:inScrollBounds];
-    [scrollView addSubview:starsView];
+    starsView = [[VNStarsView alloc] initWithFrame:CGRectMake(0, 0, kSkyWidth, kSkyHeight)];
+    [skyView addSubview:starsView];
     [starsView initStars];
 }
 
@@ -157,13 +181,13 @@ int stardateDestination;
     [button setTitleColor:selectedColor forState:UIControlStateSelected];
     [button setTitleColor:selectedColor forState:UIControlStateHighlighted];
     [button setClipsToBounds:YES];
-//    [button setTitleEdgeInsets:UIEdgeInsetsZero];
     [button setBackgroundImage:[UIImage imageNamed:@"button_back.png"] forState:UIControlStateNormal];
     [button setBackgroundImage:[UIImage imageNamed:@"button_back_bright.png"] forState:UIControlStateHighlighted];
     [button setBackgroundImage:[UIImage imageNamed:@"button_back_bright.png"] forState:UIControlStateSelected];
     [button.layer setBorderWidth:1.0f];
     [button.layer setBorderColor:normalColor.CGColor];
     [button.layer setCornerRadius:8.0f];
+    [button addTarget:self action:@selector(buttonPress:) forControlEvents:UIControlEventTouchUpInside];
     return button;
 }
 
@@ -171,45 +195,40 @@ int stardateDestination;
 
 - (void) initTopButtons {
     
-    int y = 10, h = 40, w = 0, x = 20, smallGap = 10, bigGap = 400;
-    int wClear = 70, wDraw = 70, wCons = 135, wWave = 125, wOracle = 80, wInfo = 65;
+    int y = 10, h = 40;
     
-    w = wDraw;
-    drawButton = [self createButtonWithFrame:CGRectMake(x, y, w, h) title:@"Draw" tag:MODE];
-    [topBarView addSubview:drawButton];
-    [drawButton addTarget:self action:@selector(buttonPress:) forControlEvents:UIControlEventTouchUpInside];
+    drawButton   = [self createButtonWithFrame:CGRectMake(0, y, 70, h)  title:@"Draw" tag:MODE];
+    consButton   = [self createButtonWithFrame:CGRectMake(0, y, 135, h) title:@"Constellations" tag:MODE];
+    waveButton   = [self createButtonWithFrame:CGRectMake(0, y, 125, h) title:@"WaveTercets" tag:MODE];
+    oracleButton = [self createButtonWithFrame:CGRectMake(0, y, 80, h)  title:@"Oracle" tag:MODE];
+    clearButton  = [self createButtonWithFrame:CGRectMake(0, y, 70, h)  title:@"Clear" tag:MODE];
+    infoButton   = [self createButtonWithFrame:CGRectMake(0, y, 65, h)  title:@"Info" tag:MODE];
+
+    for (UIButton *b in @[drawButton, consButton, waveButton, oracleButton, clearButton, infoButton]) {
+        [topBarView addSubview:b];
+    }
+    
     drawButton.selected = YES;
     activeNavButton = drawButton;
-    x += w + smallGap;
+    [self layoutTopButtons];
+}
+
+
+// Mode buttons sit on the left, Clear and Info on the right edge.
+- (void) layoutTopButtons {
+    CGFloat margin = 20, gap = 10;
     
-    w = wCons;
-    consButton = [self createButtonWithFrame:CGRectMake(x, y, w, h) title:@"Constellations" tag:MODE];
-    [consButton addTarget:self action:@selector(buttonPress:) forControlEvents:UIControlEventTouchUpInside];
-    [topBarView addSubview:consButton];
-    x += w + smallGap;
+    CGFloat x = margin;
+    for (UIButton *b in @[drawButton, consButton, waveButton, oracleButton]) {
+        CGRect f = b.frame; f.origin.x = x; b.frame = f;
+        x += f.size.width + gap;
+    }
     
-    w = wWave;
-    waveButton = [self createButtonWithFrame:CGRectMake(x, y, w, h) title:@"WaveTercets" tag:MODE];
-    [waveButton addTarget:self action:@selector(buttonPress:) forControlEvents:UIControlEventTouchUpInside];
-    [topBarView addSubview:waveButton];
-    x += w + smallGap;
-    
-    w = wOracle;
-    oracleButton = [self createButtonWithFrame:CGRectMake(x, y, w, h) title:@"Oracle" tag:MODE];
-    [oracleButton addTarget:self action:@selector(buttonPress:) forControlEvents:UIControlEventTouchUpInside];
-    [topBarView addSubview:oracleButton];
-    x += w + bigGap;
-    
-    w = wClear;
-    clearButton = [self createButtonWithFrame:CGRectMake(x, y, w, h) title:@"Clear" tag:MODE];
-    [clearButton addTarget:self action:@selector(buttonPress:) forControlEvents:UIControlEventTouchUpInside];
-    [topBarView addSubview:clearButton];
-    x += w + smallGap;
-    
-    w = wInfo;
-    infoButton = [self createButtonWithFrame:CGRectMake(x, y, w, h) title:@"Info" tag:MODE];
-    [infoButton addTarget:self action:@selector(buttonPress:) forControlEvents:UIControlEventTouchUpInside];
-    [topBarView addSubview:infoButton];
+    x = topBarView.bounds.size.width - margin;
+    for (UIButton *b in @[infoButton, clearButton]) {
+        CGRect f = b.frame; x -= f.size.width; f.origin.x = x; b.frame = f;
+        x -= gap;
+    }
 }
 
 
@@ -221,6 +240,17 @@ int stardateDestination;
     drawButton.selected = YES;
 }
 
+
+- (void) presentModal:(UIView *)modal {
+    curtain = [[VNBlackCurtain alloc] initWithFrame:self.view.bounds];
+    curtain.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self.view addSubview:curtain];
+    modal.center = CGPointMake(CGRectGetMidX(curtain.bounds), CGRectGetMidY(curtain.bounds));
+    modal.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin |
+                             UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
+    [curtain addSubview:modal];
+    [curtain show];
+}
 
 
 - (void) buttonPress:(UIButton *)button {
@@ -238,10 +268,7 @@ int stardateDestination;
         }
         
         if([bt isEqualToString:@"Constellations"]) {
-            curtain = [[VNBlackCurtain alloc] init];
-            [self.view addSubview:curtain];
-            [curtain addSubview:[self constellationsModal]];
-            [curtain show];
+            [self presentModal:[self constellationsModal]];
         }
         
         if([bt isEqualToString:@"WaveTercets"]) {
@@ -252,10 +279,7 @@ int stardateDestination;
         }
         
         if([bt isEqualToString:@"Oracle"]) {
-            curtain = [[VNBlackCurtain alloc] init];
-            [self.view addSubview:curtain];
-            [curtain addSubview:[self oracleModal]];
-            [curtain show];
+            [self presentModal:[self oracleModal]];
         }
         
         if([bt isEqualToString:@"Clear"]) {
@@ -264,10 +288,7 @@ int stardateDestination;
         }
         
         if([bt isEqualToString:@"Info"]) {
-            curtain = [[VNBlackCurtain alloc] init];
-            [self.view addSubview:curtain];
-            [curtain addSubview:[self infoModal]];
-            [curtain show];
+            [self presentModal:[self infoModal]];
         }
         
         if(changeSelectedNavButton) {
@@ -333,10 +354,7 @@ int stardateDestination;
         }
         
         if([bt isEqualToString:@"When did you say?"]) {
-            curtain = [[VNBlackCurtain alloc] init];
-            [self.view addSubview:curtain];
-            [curtain addSubview:[self stardateModal]];
-            [curtain show];
+            [self presentModal:[self stardateModal]];
         }
         
         if([bt isEqualToString:@"Which one?"]) {
@@ -363,8 +381,6 @@ int stardateDestination;
 
 
 
-
-
 ////////////
 // MODALS //
 ////////////
@@ -372,8 +388,7 @@ int stardateDestination;
 
 - (UIView *) createModalWithWidth:(CGFloat)w andHeight:(CGFloat)h {
 
-    CGFloat mw = w, mh = h, mx = ((1024 - mw) / 2), my = ((768 - mh) / 2);
-    UIView *modal = [[UIView alloc] initWithFrame:CGRectMake(mx, my, mw, mh)];
+    UIView *modal = [[UIView alloc] initWithFrame:CGRectMake(0, 0, w, h)];
 
     [modal.layer setBorderWidth:1.0f];
     [modal.layer setBorderColor:normalColor.CGColor];
@@ -387,35 +402,38 @@ int stardateDestination;
     
     UIView *modal = [self createModalWithWidth:910 andHeight:660];
     
-    
     infoView = [[WKWebView alloc] initWithFrame:CGRectMake(30, 20, 850, 610)];
+    infoView.navigationDelegate = self;
 
-    // Load the HTML file from the bundle
     NSString *infoPath = [[NSBundle mainBundle] pathForResource:@"info" ofType:@"html"];
     if (infoPath) {
         NSURL *fileURL = [NSURL fileURLWithPath:infoPath];
         [infoView loadFileURL:fileURL allowingReadAccessToURL:[[NSBundle mainBundle] bundleURL]];
     }
 
-    // Disable scrolling and bouncing
     infoView.scrollView.scrollEnabled = NO;
     infoView.scrollView.bounces = NO;
-
-    // Set the background color to clear and make it non-opaque
     infoView.backgroundColor = [UIColor clearColor];
     infoView.opaque = NO;
 
-//    // Set the navigation delegate if needed
-//    infoView.navigationDelegate = self;
-
-    // Add the WKWebView to the modal view
     [modal addSubview:infoView];
-    int x = 760, y = 590, w = 110, h = 40;
-    UIButton *b = [self createButtonWithFrame:CGRectMake(x, y, w, h) title:@"Close" tag:CLOSE];
+    UIButton *b = [self createButtonWithFrame:CGRectMake(760, 590, 110, 40) title:@"Close" tag:CLOSE];
     [modal addSubview:b];
-    [b addTarget:self action:@selector(buttonPress:) forControlEvents:UIControlEventTouchUpInside];
     
     return modal;
+}
+
+
+// Open links from the Info page in Safari rather than inside the small,
+// non-scrolling info box.
+- (void) webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
+    NSURL *url = navigationAction.request.URL;
+    if (navigationAction.navigationType == WKNavigationTypeLinkActivated && url && !url.isFileURL) {
+        [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
+        decisionHandler(WKNavigationActionPolicyCancel);
+        return;
+    }
+    decisionHandler(WKNavigationActionPolicyAllow);
 }
 
 
@@ -432,7 +450,6 @@ int stardateDestination;
         if(i > 4) x = 150;
         UIButton *b = [self createButtonWithFrame:CGRectMake(x, y, w, h) title:cs[i] tag:CONSTELLATION];
         [modal addSubview:b];
-        [b addTarget:self action:@selector(buttonPress:) forControlEvents:UIControlEventTouchUpInside];
         y += 50;
     }
     
@@ -457,7 +474,6 @@ int stardateDestination;
     for(int i=0; i<[cs count]; i++){
         UIButton *b = [self createButtonWithFrame:CGRectMake(x, y, w, h) title:cs[i] tag:ORACLEQUESTION];
         [modal addSubview:b];
-        [b addTarget:self action:@selector(buttonPress:) forControlEvents:UIControlEventTouchUpInside];
         y += 50;
     }
     
@@ -486,7 +502,6 @@ int stardateDestination;
     [modal addSubview:slider];
 
     UIButton *b = [self createButtonWithFrame:CGRectMake(20, 120, 250, 40) title:@"teleport" tag:STARDATE];
-    [b addTarget:self action:@selector(buttonPress:) forControlEvents:UIControlEventTouchUpInside];
     [modal addSubview:b];
 
     return modal;
@@ -507,20 +522,18 @@ int stardateDestination;
 // GESTURES //
 //////////////
 
-- (IBAction) respondToTapGesture:(UITapGestureRecognizer *)gesture {
+- (void) respondToTapGesture:(UITapGestureRecognizer *)gesture {
     CGPoint point = [gesture locationInView:starsView];
     [starsView tapSkyWithMode:currentMode point:point];
 }
 
 
-- (IBAction) respondToLongPressGesture:(UILongPressGestureRecognizer *)gesture {
+- (void) respondToLongPressGesture:(UILongPressGestureRecognizer *)gesture {
     if(currentMode == DRAW) {
         if(gesture.state == UIGestureRecognizerStateBegan) {
             [starsView startDrawingConstellation];
             CGPoint point = [gesture locationInView:starsView];
             [starsView moveFingerWhileDrawingConstellation:point];
-        } else if(gesture.state == UIGestureRecognizerStateEnded) {
-            // nothin
         } else if(gesture.state == UIGestureRecognizerStateChanged) {
             CGPoint point = [gesture locationInView:starsView];
             [starsView moveFingerWhileDrawingConstellation:point];
@@ -530,26 +543,5 @@ int stardateDestination;
         [starsView tapSkyWithMode:currentMode point:point];
     }
 }
-
-
-- (UIView *) viewForZoomingInScrollView:(UIScrollView *)scrollView {
-    return starsView;
-}
-
-
-- (void) didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-//
-//-(BOOL) webView:(UIWebView *)inWeb shouldStartLoadWithRequest:(NSURLRequest *)inRequest navigationType:(UIWebViewNavigationType)inType {
-//    if ( inType == UIWebViewNavigationTypeLinkClicked ) {
-//        [[UIApplication sharedApplication] openURL:[inRequest URL]];
-//        return NO;
-//    }
-//
-//    return YES;
-//}
 
 @end

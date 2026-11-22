@@ -30,6 +30,9 @@
     }];
 }
 
+- (BOOL)canBecomeFocused {
+    return NO;
+}
 
 - (void) drawRect:(CGRect)rect {
     

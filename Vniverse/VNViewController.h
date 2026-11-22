@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <WebKit/WebKit.h>
 
-@interface VNViewController : UIViewController <UIScrollViewDelegate, UIWebViewDelegate>
+@interface VNViewController : UIViewController <WKNavigationDelegate>
 
 @property NSTimer *backgroundTimer;
 

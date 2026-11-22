@@ -8,12 +8,12 @@
 
 #import "VNBlackCurtain.h"
 
-@implementation VNBlackCurtain
+@implementation VNBlackCurtain {
+    BOOL ready;
+}
 
-BOOL ready;
-
-- (id) init {
-    self = [super initWithFrame:CGRectMake(0, 0, 1024, 768)];
+- (instancetype) initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
     if (self) {
         self.alpha = 0;
         self.backgroundColor = [UIColor colorWithWhite:0 alpha:0.6];
@@ -25,7 +25,7 @@ BOOL ready;
     [UIView animateWithDuration:0.7 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.alpha = 1;
     } completion:^(BOOL finished) {
-        ready = YES;
+        self->ready = YES;
     }];
 }
 

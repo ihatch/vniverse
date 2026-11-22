@@ -12,7 +12,6 @@
 @implementation VNStanzaLetter
 
 @synthesize width, startPoint;
-UIView *view;
 
 - (id) initWithFrame:(CGRect)frame letter:(NSString *)letter view:(UIView *)view italic:(BOOL)italic {
     if(self = [super initWithFrame:frame]) {
@@ -23,7 +22,7 @@ UIView *view;
             self.text = emdash;
         }
         if(italic) {
-            self.font = [UIFont fontWithName:@"EuphemiaUCAS-italic" size:15];
+            self.font = [UIFont fontWithName:@"EuphemiaUCAS-Italic" size:15];
         } else {
             self.font = [UIFont fontWithName:@"EuphemiaUCAS" size:15];
         }
@@ -79,7 +78,6 @@ UIView *view;
         self.alpha = 0;
     } completion:^(BOOL finished) {
         [self removeFromSuperview];
-        view = nil;
     }];
 }
 

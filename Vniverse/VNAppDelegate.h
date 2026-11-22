@@ -10,6 +10,14 @@
 
 @interface VNAppDelegate : UIResponder <UIApplicationDelegate>
 
+@end
+
+
+// Owns the app's window. iOS now requires the scene-based life cycle,
+// so the window and the pause/resume hooks live here rather than in
+// the app delegate.
+@interface VNSceneDelegate : UIResponder <UIWindowSceneDelegate>
+
 @property (strong, nonatomic) UIWindow *window;
 
 @end

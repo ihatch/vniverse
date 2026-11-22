@@ -29,6 +29,7 @@
     int currentTercet;
     NSTimer *tercetsTimer;
     BOOL didSuspendTercetsTimer;
+    NSMutableArray<NSTimer *> *pendingTimers;   // one-shot Oracle effects, cancelled by clearScreen
 }
 
 
@@ -45,8 +46,9 @@
 
         constellations = [NSMutableArray array];
         highlightedStars = [NSMutableArray array];
+        pendingTimers = [NSMutableArray array];
 
-        textView = [[VNTextView alloc] initWithFrame:self.frame];
+        textView = [[VNTextView alloc] initWithFrame:self.bounds];
         [self addSubview:textView];
     }
     return self;
@@ -77,6 +79,7 @@
     }
 
     starObjects = [NSArray arrayWithArray:starObjs];
+    [self bringSubviewToFront:textView];
 }
 
 - (void) highlightStar:(VNStar *)star {
@@ -97,12 +100,24 @@
     }
 
     CGFloat t = 4.0 + ABF(2.0);
-    [NSTimer scheduledTimerWithTimeInterval:t target:self selector:@selector(showRandomStarWord) userInfo:nil repeats:NO];
-
+    [self scheduleOneShot:t target:self selector:@selector(showRandomStarWord)];
 }
 
 - (int) randomStarNumber {
-    return (arc4random() % 231) + 1;
+    // Stars and tercets are numbered 1...232 (index 0 is a placeholder).
+    return (int)arc4random_uniform((uint32_t)[VNData tercetCount] - 1) + 1;
+}
+
+
+- (void) scheduleOneShot:(NSTimeInterval)t target:(id)target selector:(SEL)selector {
+    [pendingTimers filterUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSTimer *timer, NSDictionary *bindings) { return timer.isValid; }]];
+    NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:t target:target selector:selector userInfo:nil repeats:NO];
+    [pendingTimers addObject:timer];
+}
+
+- (void) cancelPendingTimers {
+    for (NSTimer *timer in pendingTimers) [timer invalidate];
+    [pendingTimers removeAllObjects];
 }
 
 
@@ -227,9 +242,8 @@
 
 - (void) startDrawingConstellation {
     if(activeConstellation) [constellations addObject:activeConstellation];
-    activeConstellation = [[VNConstellationView alloc] initWithFrame:self.frame];
+    activeConstellation = [[VNConstellationView alloc] initWithFrame:self.bounds];
     [self addSubview:activeConstellation];
-    [self setNeedsDisplay];
     lastPathStarID = 0;
 }
 
@@ -279,6 +293,7 @@
     [self clearAllConstellations];
     [self clearStarHighlights];
     [self stopTercetsTimer];
+    [self cancelPendingTimers];
     [textView clearAllText];
     [self setNeedsDisplay];
     currentTercet = 0;
@@ -344,10 +359,10 @@
     int n = ABI(3) + 2;
     for(int i=0; i<n; i++){
         CGFloat t = 3.0 + ABF(5.0);
-        [NSTimer scheduledTimerWithTimeInterval:t target:self selector:@selector(showRandomStarWord) userInfo:nil repeats:NO];
+        [self scheduleOneShot:t target:self selector:@selector(showRandomStarWord)];
     }
 
-    [NSTimer scheduledTimerWithTimeInterval:8.5 target:textView selector:@selector(clearTercet) userInfo:nil repeats:NO];
+    [self scheduleOneShot:8.5 target:textView selector:@selector(clearTercet)];
 }
 
 
@@ -356,7 +371,7 @@
     int n = ABI(3) + 6;
     for(int i=0; i<n; i++){
         CGFloat t = 0.5 + ABF(11.0);
-        [NSTimer scheduledTimerWithTimeInterval:t target:self selector:@selector(showRandomStarWordInColor) userInfo:nil repeats:NO];
+        [self scheduleOneShot:t target:self selector:@selector(showRandomStarWordInColor)];
     }
     
 }
@@ -391,15 +406,13 @@
     
     // don't leak, please!
     CGPathRelease(circlePath);
-    layer.delegate = self;
     
     // set up the attributes of the shape layer and add it to our view's layer
     layer.fillColor = [[UIColor clearColor] CGColor];
     layer.strokeColor = [color CGColor];
     layer.position = point;
     layer.anchorPoint = CGPointMake(.5f, .5f);
-    [self.layer addSublayer:layer];
-    
+
     // set up the growing animation
     CABasicAnimation *grow = [CABasicAnimation animationWithKeyPath:@"transform"];
     grow.fromValue = [layer valueForKey:@"transform"];
@@ -420,12 +433,16 @@
     [fade setValue:@"fade" forKey:@"name"];
     [fade setValue:layer forKey:@"layer"];
     [layer addAnimation:fade forKey:@"opacity"];
+
+    // Add to the tree last, so setting the final values above does not also
+    // trigger implicit animations.
+    [self.layer addSublayer:layer];
 }
 
 
 // when growing circle animation is complete, remove the layer
 - (void) animationDidStop:(CAAnimation *)anim finished:(BOOL)flag {
-    if (flag && [[anim valueForKey:@"name"] isEqual:@"fade"]) {
+    if ([[anim valueForKey:@"name"] isEqual:@"fade"]) {
         CALayer* layer = [anim valueForKey:@"layer"];
         if(layer) [layer removeFromSuperlayer];
     }

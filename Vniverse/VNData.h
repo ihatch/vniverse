@@ -25,9 +25,6 @@ int ABI(int max);
 
 + (UIColor *) colorForStar:(int)n;
 + (UIColor *) circleColorForStar:(int)n;
-+ (CGFloat) screenWidth;
-+ (CGFloat) currentScreenWidth;
-+ (CGRect) currentScreenBoundsForOrientation;
 
 
 @end

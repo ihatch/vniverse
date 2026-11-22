@@ -12,8 +12,10 @@
 // GLOBAL UTILITY FUNCTIONS //
 //////////////////////////////
 
+// Random float in [0, multiplier]. (Previously used rand(), which was never
+// seeded, so every launch replayed the same "random" sequence.)
 CGFloat ABF(CGFloat multiplier) {
-    return ((float)rand() / RAND_MAX) * multiplier;
+    return ((CGFloat)arc4random() / (CGFloat)UINT32_MAX) * multiplier;
 }
 int ABI(int max) {
     return (int) arc4random_uniform(max);
@@ -22,14 +24,13 @@ int ABI(int max) {
 
 @implementation VNData
 
-VNData *dataInstance;
-NSArray *tercets;
-NSArray *stars;
-NSDictionary *constellations;
-NSDictionary *constellationColors;
-NSDictionary *constellationColorsForCircles;
-NSDictionary *maps;
-int cachedScreenWidth;
+static VNData *dataInstance;
+static NSArray *tercets;
+static NSArray *stars;
+static NSDictionary *constellations;
+static NSDictionary *constellationColors;
+static NSDictionary *constellationColorsForCircles;
+static NSDictionary *maps;
 
 
 + (void) initialize {
@@ -241,56 +242,6 @@ int cachedScreenWidth;
 
 + (NSArray *) allStars {
     return stars;
-}
-
-
-
-
-
-
-////////////
-// SCREEN //
-////////////
-
-+ (CGFloat) screenWidth {
-    if(!cachedScreenWidth) {
-        cachedScreenWidth = [VNData currentScreenWidth];
-    }
-    return cachedScreenWidth;
-}
-
-+ (CGFloat) currentScreenWidth {
-    CGRect rect = [VNData currentScreenBoundsForOrientation];
-    return rect.size.width;
-}
-
-+ (CGRect) currentScreenBoundsForOrientation {
-    
-    CGRect screenBounds = [UIScreen mainScreen].bounds;
-    CGFloat width = CGRectGetWidth(screenBounds);
-    CGFloat height = CGRectGetHeight(screenBounds);
-//    UIInterfaceOrientation interfaceOrientation = [UIApplication sharedApplication].statusBarOrientation;
-    
-    UIWindowScene *windowScene = (UIWindowScene *)[UIApplication sharedApplication].connectedScenes.anyObject;
-    if ([windowScene isKindOfClass:[UIWindowScene class]]) {
-        UIInterfaceOrientation orientation = windowScene.interfaceOrientation;
-        if (UIInterfaceOrientationIsLandscape(orientation)) {
-            NSLog(@"Landscape orientation");
-            screenBounds.size = CGSizeMake(height, width);
-
-        } else {
-            NSLog(@"Portrait orientation");
-            screenBounds.size = CGSizeMake(width, height);
-        }
-    }
-    
-//    if(UIInterfaceOrientationIsPortrait(interfaceOrientation)){
-//        screenBounds.size = CGSizeMake(width, height);
-//    } else if(UIInterfaceOrientationIsLandscape(interfaceOrientation)){
-//        screenBounds.size = CGSizeMake(height, width);
-//    }
-//    
-    return screenBounds;
 }
 
 

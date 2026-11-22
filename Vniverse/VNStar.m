@@ -30,6 +30,9 @@
     return self;
 }
 
+- (BOOL)canBecomeFocused {
+    return NO;
+}
 
 - (void) addHighlight {
     highlight = YES;

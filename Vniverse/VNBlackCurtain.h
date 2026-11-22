@@ -10,7 +10,7 @@
 
 @interface VNBlackCurtain : UIView
 
-- (id) init;
+- (instancetype) initWithFrame:(CGRect)frame;
 - (void) show;
 - (void) hide;
 
