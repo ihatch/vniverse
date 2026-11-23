@@ -7,9 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <WebKit/WebKit.h>
 
-@interface VNViewController : UIViewController <WKNavigationDelegate>
+@interface VNViewController : UIViewController
 
 + (void) suspendTimers;
 + (void) resumeTimers;

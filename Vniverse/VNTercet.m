@@ -19,15 +19,15 @@
     VNWord *numberLabel;
     VNWord *wordLabel;
     CGFloat scale;
-    CGSize containerSize;
+    CGRect area;
 }
 
 @synthesize tercetWidth;
 
-- (id) initWithOrigin:(CGPoint)origin tercet:(int)starNumber scale:(CGFloat)textScale bounds:(CGSize)bounds {
+- (id) initWithOrigin:(CGPoint)origin tercet:(int)starNumber scale:(CGFloat)textScale area:(CGRect)textArea {
     if(self = [super initWithFrame:CGRectMake(origin.x, origin.y, 200 * textScale, 100 * textScale)]) {
         scale = textScale;
-        containerSize = bounds;
+        area = textArea;
         self.tercetWidth = 0;
         starID = starNumber;
         lines = [NSMutableArray array];
@@ -74,14 +74,14 @@
         y += 22 * scale;
     }
     
-    // Keep the whole tercet inside the containing view.
+    // Keep the whole tercet inside its allowed area.
     CGRect f = self.frame;
     CGFloat blockHeight = 110 * scale;
     CGFloat margin = 8;
-    if (f.origin.x + self.tercetWidth > containerSize.width - margin) f.origin.x = containerSize.width - margin - self.tercetWidth;
-    if (f.origin.x < margin) f.origin.x = margin;
-    if (f.origin.y + blockHeight > containerSize.height - margin) f.origin.y = containerSize.height - margin - blockHeight;
-    if (f.origin.y < 0) f.origin.y = 0;
+    if (f.origin.x + self.tercetWidth > CGRectGetMaxX(area) - margin) f.origin.x = CGRectGetMaxX(area) - margin - self.tercetWidth;
+    if (f.origin.x < CGRectGetMinX(area) + margin) f.origin.x = CGRectGetMinX(area) + margin;
+    if (f.origin.y + blockHeight > CGRectGetMaxY(area) - margin) f.origin.y = CGRectGetMaxY(area) - margin - blockHeight;
+    if (f.origin.y < CGRectGetMinY(area)) f.origin.y = CGRectGetMinY(area);
     self.frame = f;
 }
 

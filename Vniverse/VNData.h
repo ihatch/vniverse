@@ -39,5 +39,10 @@ int ABI(int max);
 // the field scale but never drops below a clearly visible size.
 + (CGFloat) markScale;
 
+// Highest and lowest star positions in the 1024 x 688 field (for spacing the
+// field so the stars sit evenly between the screen's top and bottom edges).
++ (CGFloat) topmostStarY;
++ (CGFloat) bottommostStarY;
+
 
 @end

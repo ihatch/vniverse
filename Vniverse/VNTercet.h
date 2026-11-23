@@ -12,9 +12,10 @@
 
 @property (nonatomic) CGFloat tercetWidth;
 
-// origin: top-left of the tercet block. scale: text scale. bounds: size of the
-// containing view, used to keep the whole tercet on screen.
-- (id) initWithOrigin:(CGPoint)origin tercet:(int)starNumber scale:(CGFloat)scale bounds:(CGSize)bounds;
+// origin: top-left of the tercet block. scale: text scale. area: the part of
+// the containing view the tercet must stay inside (clear of the Dynamic
+// Island, notch and rounded screen corners).
+- (id) initWithOrigin:(CGPoint)origin tercet:(int)starNumber scale:(CGFloat)scale area:(CGRect)area;
 - (void) selfDestruct;
 - (void) selfDestructAfterXSeconds:(CGFloat)seconds;
 

@@ -17,6 +17,10 @@
 @property (nonatomic) CGPoint fieldOrigin;
 @property (nonatomic) CGFloat textScale;
 
+// Where text may appear, in this view's coordinates: the safe area, clear of
+// the Dynamic Island, notch and rounded corners. Defaults to the whole view.
+@property (nonatomic) CGRect textArea;
+
 - (void) showNumberForStar:(int)starID;
 - (void) showWordForStar:(int)starID;
 - (void) showWordInColorForStar:(int)starID;

@@ -269,5 +269,17 @@ static const CGFloat kMinMarkScale = 0.75;
     return MAX(MIN(scaleX, scaleY), kMinMarkScale);
 }
 
++ (CGFloat) topmostStarY {
+    CGFloat y = CGFLOAT_MAX;
+    for (int i = 1; i < [stars count]; i++) y = MIN(y, [VNData coordinatesForStar:i].y);
+    return y;
+}
+
++ (CGFloat) bottommostStarY {
+    CGFloat y = 0;
+    for (int i = 1; i < [stars count]; i++) y = MAX(y, [VNData coordinatesForStar:i].y);
+    return y;
+}
+
 
 @end

@@ -14,6 +14,7 @@
 #import "VNWord.h"
 #import "VNBlackCurtain.h"
 #import "VNTextView.h"
+#import "VNInfoView.h"
 
 typedef enum { MODE, CONSTELLATION, ORACLEQUESTION, STARDATE, CLOSE } buttonType;
 
@@ -32,12 +33,24 @@ static const CGFloat kMenuItemGap = 12;
 static const CGFloat kMenuItemFontSize = 13;
 static const CGFloat kMenuButtonSize = 32;   // square, same height as the menu items (kMenuItemHeight)
 static const CGFloat kMenuLineSpacing = 5;
-static const CGFloat kMenuButtonInset = 16;
+static const CGFloat kMenuButtonInset = 16;          // screens with square corners (e.g. iPhone SE)
+static const CGFloat kRoundedCornerInset = 24;      // screens with rounded corners: clear of the curve
 static const NSTimeInterval kMenuDuration = 0.42;
 
 // Text never shrinks below this fraction of its iPad size, however small the
 // star field gets.
 static const CGFloat kMinTextScale = 0.8;
+
+// How much the star field may be stretched along its longer spare axis (about
+// what phones get from the "half the leftover space" rule).
+static const CGFloat kMaxStretch = 0.23;
+// iPad in portrait gets 50% more vertical stretch, and darker fades above and
+// below the field.
+static const CGFloat kMaxPortraitStretch = 0.345;
+static const CGFloat kFadeAlpha = 0.2, kPortraitFadeAlpha = 0.35;
+
+// Narrowest window that still fits the top bar of buttons.
+static const CGFloat kMinTopBarWidth = 680;
 
 static appMode currentMode;
 
@@ -48,13 +61,10 @@ static VNWord *sliderValueDisplay;
 static VNBlackCurtain *curtain;
 
 static UIView *skyView, *barView;
-static WKWebView *infoView;
 static UIView *infoModalView;
-static UIButton *infoCloseButton;
-static BOOL infoIsCompact;
 
 static BOOL phoneLayout, menuOpen;
-static UIView *leftMargin, *rightMargin, *topFade, *menuDimView;
+static UIView *leftMargin, *rightMargin, *topFade, *bottomFade, *menuDimView;
 static UIButton *menuButton;
 static NSArray<UIView *> *menuLines;
 static UIViewPropertyAnimator *menuAnimator;
@@ -119,6 +129,7 @@ static int stardateDestination;
     [self initBarView];
     [self initMenuButton];
 
+
 }
 
 
@@ -152,26 +163,49 @@ static int stardateDestination;
     CGRect bounds = self.view.bounds;
     CGFloat W = bounds.size.width, H = bounds.size.height;
     UIEdgeInsets safe = self.view.safeAreaInsets;
-    phoneLayout = (self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact);
+    // The hamburger menu is used on phones in landscape and in any window too
+    // narrow for the top bar (e.g. a small iPad window).
+    phoneLayout = (self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact) || (W - safe.left - safe.right) < kMinTopBarWidth;
     if (!phoneLayout) menuOpen = NO;
 
+    // The star field is fitted to the space available and may then be
+    // stretched along the axis with room to spare: half of the way to filling
+    // it, and never more than kMaxStretch.
     CGRect sky;
     CGFloat sx, sy;
+    BOOL verticalStretch = NO;
+    CGFloat fieldTop = -1;   // >= 0 to place the field at this y instead of centring it
     if (phoneLayout) {
-        sky = bounds;
-        CGFloat fitX = (W - safe.left - safe.right) / kSkyWidth;   // keep stars clear of the notch
+        sky = bounds;   // stars use the full height; sideways they stay clear of the island/notch
+        CGFloat fitX = (W - safe.left - safe.right) / kSkyWidth;
         CGFloat fitY = H / kSkyHeight;
         if (fitX <= fitY) {
-            sx = sy = fitX;                                         // unusually narrow: plain fit
+            sx = fitX;
+            sy = MIN(MIN(fitX + 0.5 * (fitY - fitX), fitY), fitX * (1 + kMaxStretch));
+            verticalStretch = YES;
         } else {
-            sy = fitY;
-            sx = MIN(fitY + 0.5 * (W / kSkyWidth - fitY), fitX);    // half of the full sideways stretch
+            // Fit the stars (not the whole field) between equal gaps at the top
+            // and bottom: the gap above the highest star when the field fills
+            // the height, repeated below the lowest star.
+            CGFloat top = [VNData topmostStarY], bottom = [VNData bottommostStarY];
+            CGFloat gap = top * fitY;
+            sy = (H - 2 * gap) / (bottom - top);
+            fieldTop = gap - top * sy;
+            sx = MIN(MIN(sy + 0.5 * (W / kSkyWidth - sy), fitX), sy * (1 + kMaxStretch));
         }
     } else {
         barView.frame = CGRectMake(0, safe.top, W, kTopBarHeight);
         CGFloat skyTop = CGRectGetMaxY(barView.frame);
         sky = CGRectMake(safe.left, skyTop, W - safe.left - safe.right, H - skyTop - safe.bottom);
-        sx = sy = MIN(sky.size.width / kSkyWidth, sky.size.height / kSkyHeight);
+        CGFloat fitX = sky.size.width / kSkyWidth, fitY = sky.size.height / kSkyHeight;
+        if (fitX < fitY) {
+            // Portrait (taller than the field): fill the width, stretch downwards a little.
+            sx = fitX;
+            sy = MIN(fitX + 0.5 * (fitY - fitX), fitX * (1 + kMaxPortraitStretch));
+            verticalStretch = YES;
+        } else {
+            sx = sy = fitY;   // landscape: plain fit, as before
+        }
     }
     if (sx <= 0 || sy <= 0) sx = sy = 1;
     skyView.frame = sky;
@@ -179,7 +213,7 @@ static int stardateDestination;
     // Size and centre the star field (drawn unscaled; stars are placed by VNData).
     CGSize field = CGSizeMake(kSkyWidth * sx, kSkyHeight * sy);
     starsView.frame = CGRectMake(floor((sky.size.width - field.width) / 2),
-                                 floor((sky.size.height - field.height) / 2),
+                                 fieldTop >= 0 ? fieldTop : floor((sky.size.height - field.height) / 2),
                                  field.width, field.height);
 
     if (sx != [VNData fieldScaleX] || sy != [VNData fieldScaleY]) {
@@ -191,14 +225,33 @@ static int stardateDestination;
     textLayer.frame = skyView.bounds;
     textLayer.fieldOrigin = starsView.frame.origin;
     textLayer.textScale = MAX(MIN(sx, sy), kMinTextScale);
+    // Words and tercets stay inside the safe area: never under the Dynamic
+    // Island or notch, or cut off by a rounded screen corner.
+    CGRect safeRect = UIEdgeInsetsInsetRect(bounds, safe);
+    textLayer.textArea = CGRectIntersection(textLayer.bounds, [self.view convertRect:safeRect toView:textLayer]);
 
-    // Tinted strips either side of the field on phones.
+    // Gradient strips beside the field where there is spare room: left and
+    // right on phones; above and below when stretched vertically (iPad
+    // portrait). On iPad in landscape, the fade behind the top bar.
     CGRect fieldInView = [skyView convertRect:starsView.frame toView:self.view];
     leftMargin.frame = CGRectMake(0, 0, CGRectGetMinX(fieldInView), H);
     rightMargin.frame = CGRectMake(CGRectGetMaxX(fieldInView), 0, W - CGRectGetMaxX(fieldInView), H);
-    leftMargin.hidden = rightMargin.hidden = !phoneLayout;
-    topFade.frame = CGRectMake(0, 0, W, CGRectGetMaxY(barView.frame));
-    topFade.hidden = phoneLayout;
+    leftMargin.hidden = rightMargin.hidden = !(phoneLayout && CGRectGetMinX(fieldInView) > 0.5);
+
+    if (verticalStretch) {
+        topFade.frame = CGRectMake(0, 0, W, CGRectGetMinY(fieldInView));
+        bottomFade.frame = CGRectMake(0, CGRectGetMaxY(fieldInView), W, H - CGRectGetMaxY(fieldInView));
+    } else {
+        topFade.frame = CGRectMake(0, 0, W, CGRectGetMaxY(barView.frame));
+    }
+    topFade.hidden = phoneLayout && !verticalStretch;
+    bottomFade.hidden = !verticalStretch;
+
+    // Darker fades only on iPad in portrait.
+    CGFloat fadeAlpha = (verticalStretch && !phoneLayout) ? kPortraitFadeAlpha : kFadeAlpha;
+    NSArray *fadeColors = @[(id)[UIColor colorWithWhite:0 alpha:0].CGColor, (id)[UIColor colorWithWhite:0 alpha:fadeAlpha].CGColor];
+    ((CAGradientLayer *)topFade.layer).colors = fadeColors;
+    ((CAGradientLayer *)bottomFade.layer).colors = fadeColors;
 
     [self layoutMenuChrome];
     [self layoutButtons];
@@ -236,6 +289,16 @@ static int stardateDestination;
     tg.endPoint = CGPointMake(0.5, 0);
     topFade.userInteractionEnabled = NO;
     [self.view addSubview:topFade];
+
+    // Below the field when it is stretched vertically (iPad portrait).
+    bottomFade = [[VNGradientView alloc] init];
+    CAGradientLayer *bg = (CAGradientLayer *)bottomFade.layer;
+    bg.colors = tg.colors;
+    bg.startPoint = CGPointMake(0.5, 0);
+    bg.endPoint = CGPointMake(0.5, 1);
+    bottomFade.userInteractionEnabled = NO;
+    bottomFade.hidden = YES;
+    [self.view addSubview:bottomFade];
 }
 
 // Dims the sky while the menu is open; tapping it closes the menu.
@@ -313,6 +376,13 @@ static int stardateDestination;
     [menuAnimator startAnimation];
 }
 
+// How far the menu button and menu items sit from the screen edges. Screens
+// with rounded corners (all with a home indicator) need more room, so the
+// button stays well clear of the curve.
+- (CGFloat) cornerInset {
+    return self.view.safeAreaInsets.bottom > 0 ? kRoundedCornerInset : kMenuButtonInset;
+}
+
 // Left edge of the menu items: lined up with the menu button, unless the
 // Dynamic Island / notch is on the left (the phone is rotated with its top to
 // the left), in which case they stay just inside the safe area, clear of it.
@@ -320,17 +390,33 @@ static int stardateDestination;
     CGFloat inset = self.view.safeAreaInsets.left;
     UIInterfaceOrientation o = self.view.window.windowScene.interfaceOrientation;
     BOOL housingOnLeft = (o == UIInterfaceOrientationLandscapeRight);
-    if (inset > kMenuButtonInset && housingOnLeft) return inset;
-    return kMenuButtonInset;
+    CGFloat corner = [self cornerInset];
+    if (inset > corner && housingOnLeft) return inset;
+    return corner;
 }
 
 // Turning the phone end over (landscape left <-> right) keeps the same size,
 // but moves the island to the other side, so lay the menu out again.
 - (void) viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+
+    // If the Info popup is open when the device rotates (or the window is
+    // resized, or the iPhone Duo folds), it fades out as the rotation starts,
+    // and fades back in, laid out for the new size (two columns or one, its
+    // width and height, and Close), once the rotation has finished.
+    BOOL infoOpen = curtain.superview && infoModalView.superview == curtain;
+    if (infoOpen) {
+        UIView *modal = infoModalView;
+        modal.userInteractionEnabled = NO;
+        [UIView animateWithDuration:0.15 delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:^{
+            modal.alpha = 0;
+        } completion:nil];
+    }
+
     [coordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
         [self.view setNeedsLayout];
         [self.view layoutIfNeeded];
+        if (infoOpen && infoModalView.superview == curtain) [self relayoutOpenInfo];
     }];
 }
 
@@ -348,7 +434,7 @@ static int stardateDestination;
     }
 
     barView.backgroundColor = menuBackColor;
-    CGFloat panelWidth = [self menuItemsX] + kMenuItemWidth + kMenuButtonInset;
+    CGFloat panelWidth = [self menuItemsX] + kMenuItemWidth + [self cornerInset];
     CGFloat closedX = -(panelWidth + 20);   // fully off screen, shadow included
     barView.frame = CGRectMake(menuOpen ? 0 : closedX, 0, panelWidth, H);
     menuDimView.frame = self.view.bounds;
@@ -357,7 +443,7 @@ static int stardateDestination;
     // Top-left corner of the whole screen (in the tinted strip where there is
     // one), inset just enough to clear rounded display corners. When the island
     // or notch is on the left it moves right to line up with the menu items.
-    menuButton.frame = CGRectMake([self menuItemsX], kMenuButtonInset, kMenuButtonSize, kMenuButtonSize);
+    menuButton.frame = CGRectMake([self menuItemsX], [self cornerInset], kMenuButtonSize, kMenuButtonSize);
     // Generous invisible tap area for the hamburger; none for the X, which sits
     // just above the menu items.
     ((VNButton *)menuButton).touchMargin = menuOpen ? 0 : 14;
@@ -569,13 +655,13 @@ static UIColor *driftColor(VNColorDrift *d, CFTimeInterval now) {
         UIFont *font = [UIFont fontWithName:@"EuphemiaUCAS" size:kMenuItemFontSize];
         for (UIButton *b in [modeButtons arrayByAddingObjectsFromArray:utilityButtons]) b.titleLabel.font = font;
 
-        CGFloat y = kMenuButtonInset + kMenuButtonSize + gap;   // below the menu button, same spacing as the items
+        CGFloat y = [self cornerInset] + kMenuButtonSize + gap;   // below the menu button, same spacing as the items
         for (UIButton *b in modeButtons) {
             b.frame = CGRectMake(x, y, w, h);
             y += h + gap;
         }
 
-        y = bar.height - safe.bottom - kMenuButtonInset - h;
+        y = bar.height - safe.bottom - [self cornerInset] - h;
         for (UIButton *b in [utilityButtons reverseObjectEnumerator]) {
             b.frame = CGRectMake(x, y, w, h);
             y -= h + gap;
@@ -588,14 +674,16 @@ static UIColor *driftColor(VNColorDrift *d, CFTimeInterval now) {
 
     CGFloat margin = 20, gap = 10, y = 10, h = 40;
 
-    CGFloat x = margin;
+    // Each side keeps clear of its own safe-area inset (e.g. the iPhone Duo's
+    // vertical status bar on one edge).
+    CGFloat x = safe.left + margin;
     for (NSUInteger i = 0; i < modeButtons.count; i++) {
         CGFloat w = modeButtonWidths[i].doubleValue;
         modeButtons[i].frame = CGRectMake(x, y, w, h);
         x += w + gap;
     }
 
-    x = bar.width - margin;
+    x = bar.width - safe.right - margin;
     for (NSInteger i = (NSInteger)utilityButtons.count - 1; i >= 0; i--) {
         CGFloat w = utilityButtonWidths[i].doubleValue;
         x -= w;
@@ -619,20 +707,36 @@ static UIColor *driftColor(VNColorDrift *d, CFTimeInterval now) {
 // phones the home-indicator inset at the bottom would otherwise push them up).
 - (CGRect) modalArea {
     UIEdgeInsets s = self.view.safeAreaInsets;
-    CGFloat v = MAX(s.top, s.bottom), h = MAX(s.left, s.right);
-    return CGRectInset(UIEdgeInsetsInsetRect(self.view.bounds, UIEdgeInsetsMake(v, h, v, h)), 10, 10);
+    // Horizontally, each edge keeps its own inset, so popups centre in the space
+    // beside a one-sided vertical bar. Vertically, the larger inset is used on
+    // both edges so popups sit in the true centre of the screen (by design).
+    CGFloat v = MAX(s.top, s.bottom);
+    return CGRectInset(UIEdgeInsetsInsetRect(self.view.bounds, UIEdgeInsetsMake(v, s.left, v, s.right)), 10, 10);
 }
 
 - (void) presentModal:(UIView *)modal {
-    curtain = [[VNBlackCurtain alloc] initWithFrame:self.view.bounds];
-    curtain.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [self.view addSubview:curtain];
+    [self presentModal:modal dimBackground:YES];
+}
 
-    // Shrink the modal slightly if it does not fit (e.g. the Oracle list on an iPhone).
+// dimBackground: NO leaves the sky behind the popup undimmed (used for Info,
+// whose dark panel would otherwise blend into a darkened sky). The curtain is
+// still there, invisible, so a tap outside the popup closes it.
+// Centres a popup in the available area, shrinking it slightly if it does not
+// fit (e.g. the Oracle list on an iPhone).
+- (void) placeModal:(UIView *)modal {
     CGRect area = [self modalArea];
     CGFloat fit = MIN(1.0, MIN(area.size.width / modal.bounds.size.width, area.size.height / modal.bounds.size.height));
     modal.transform = CGAffineTransformMakeScale(fit, fit);
     modal.center = CGPointMake(CGRectGetMidX(area), CGRectGetMidY(area));
+}
+
+- (void) presentModal:(UIView *)modal dimBackground:(BOOL)dim {
+    curtain = [[VNBlackCurtain alloc] initWithFrame:self.view.bounds];
+    if (!dim) curtain.backgroundColor = [UIColor clearColor];
+    curtain.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self.view addSubview:curtain];
+
+    [self placeModal:modal];
     modal.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin |
                              UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
     [curtain addSubview:modal];
@@ -678,7 +782,7 @@ static UIColor *driftColor(VNColorDrift *d, CFTimeInterval now) {
         }
         
         if([bt isEqualToString:@"Info"]) {
-            [self presentModal:[self infoModal]];
+            [self presentModal:[self infoModal] dimBackground:NO];
         }
         
         if(changeSelectedNavButton) {
@@ -789,139 +893,107 @@ static UIColor *driftColor(VNColorDrift *d, CFTimeInterval now) {
     return modal;
 }
 
-- (UIView *) infoModal {
-    
-    // Full size on iPads; on smaller screens, fill the available area and let
-    // the page scroll, laid out as a single column at a readable size.
+// Replaces a popup's flat background with a still, diagonal gradient from a
+// reddish purple (top left) to a bluish purple (bottom right), like the sky's
+// drifting background. Both ends are the standard popup purple turned 20°
+// towards red and towards blue, at the same brightness and opacity.
+- (void) applyGradientBackground:(UIView *)modal {
+    CAGradientLayer *g = [CAGradientLayer layer];
+    g.frame = modal.bounds;
+    g.cornerRadius = modal.layer.cornerRadius;
+    g.colors = @[(id)[UIColor colorWithRed:0.25 green:0.13 blue:0.21 alpha:0.8].CGColor,
+                 (id)[UIColor colorWithRed:0.21 green:0.13 blue:0.25 alpha:0.8].CGColor];
+    g.startPoint = CGPointMake(0, 0);
+    g.endPoint = CGPointMake(1, 1);
+    modal.backgroundColor = [UIColor clearColor];
+    [modal.layer insertSublayer:g atIndex:0];
+}
+
+// Size of the Info popup for the current layout. Full size (two columns) on
+// iPads in landscape; otherwise a single scrolling column: 75% of the room on
+// phones, 62% of the screen's width on iPads in portrait or in small windows
+// (and the iPhone Duo's inner screen).
+- (void) infoGeometryWidth:(CGFloat *)wOut height:(CGFloat *)hOut compact:(BOOL *)compactOut {
     CGRect area = [self modalArea];
     CGFloat w = MIN(910, area.size.width), h = MIN(660, area.size.height);
     BOOL compact = (w < 910 || h < 660);
-
-    UIView *modal = [self createModalWithWidth:w andHeight:h];
-
-    WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
-    if (compact) {
-        NSString *js = @"var m = document.createElement('meta'); m.name = 'viewport';"
-                        "m.content = 'width=device-width, initial-scale=1';"
-                        "document.head.appendChild(m);";
-        [config.userContentController addUserScript:[[WKUserScript alloc] initWithSource:js injectionTime:WKUserScriptInjectionTimeAtDocumentEnd forMainFrameOnly:YES]];
+    if (compact && phoneLayout) w = round(w * 0.75);   // a narrower column reads better on phones
+    if (!phoneLayout && (compact || [self infoIsTall])) {
+        w = MIN(round(self.view.bounds.size.width * 0.62), area.size.width);
+        h = area.size.height;
+        // When it runs this tall, keep it clear of the top bar (by the same
+        // amount at the bottom, so it stays centred).
+        CGFloat overlap = CGRectGetMaxY(barView.frame) + 10 - CGRectGetMinY(area);
+        if (overlap > 0) h -= 2 * overlap;
+        compact = YES;
     }
+    if (wOut) *wOut = w;
+    if (hOut) *hOut = h;
+    if (compactOut) *compactOut = compact;
+}
 
-    // On phones the page runs the full height of the popup, and its text fades
-    // out over a short band at the top and bottom edges. The bottom fade also
-    // hints that the page scrolls.
-    CGFloat fade = 26;
-    CGRect webFrame = compact ? CGRectMake(16, 0, w - 32, h) : CGRectMake(30, 20, 850, 610);
-    infoView = [[WKWebView alloc] initWithFrame:webFrame configuration:config];
-    infoView.navigationDelegate = self;
-
-    NSString *infoPath = [[NSBundle mainBundle] pathForResource:@"info" ofType:@"html"];
-    if (infoPath) {
-        NSURL *fileURL = [NSURL fileURLWithPath:infoPath];
-        [infoView loadFileURL:fileURL allowingReadAccessToURL:[[NSBundle mainBundle] bundleURL]];
-    }
-
-    infoView.scrollView.scrollEnabled = compact;
-    infoView.scrollView.bounces = NO;
-    infoView.backgroundColor = [UIColor clearColor];
-    infoView.opaque = NO;
-
-    if (compact) {
-        // The fade is a mask on a plain container, which is more reliable than
-        // masking the web view's own layer.
-        UIView *clip = [[UIView alloc] initWithFrame:webFrame];
-        infoView.frame = clip.bounds;
-        [clip addSubview:infoView];
-
-        CAGradientLayer *mask = [CAGradientLayer layer];
-        mask.frame = clip.bounds;
-        CGFloat f = fade / h;
-        mask.colors = @[(id)[UIColor clearColor].CGColor, (id)[UIColor blackColor].CGColor,
-                        (id)[UIColor blackColor].CGColor, (id)[UIColor clearColor].CGColor];
-        mask.locations = @[@0, @(f), @(1 - f), @1];
-        clip.layer.mask = mask;
-
-        infoView.scrollView.verticalScrollIndicatorInsets = UIEdgeInsetsMake(fade, 0, fade, 0);
-        [modal addSubview:clip];
-    } else {
-        [modal addSubview:infoView];
-    }
-    // On phones, Close matches the menu buttons and has a larger invisible tap area.
-    CGRect closeFrame = compact ? CGRectMake(w - 16 - kMenuItemWidth, h - 16 - kMenuItemHeight, kMenuItemWidth, kMenuItemHeight)
-                                : CGRectMake(760, 590, 110, 40);
-    UIButton *b = [self createButtonWithFrame:closeFrame title:@"Close" tag:CLOSE];
-    if (compact) {
-        b.titleLabel.font = [UIFont fontWithName:@"EuphemiaUCAS" size:kMenuItemFontSize];
-        ((VNButton *)b).touchMargin = 12;   // stays inside the popup's 16pt edge
-    }
-    [modal addSubview:b];
-
-    // On iPads the popup is fitted to the page once it has loaded (see
-    // webView:didFinishNavigation:); keep it hidden until then so it doesn't jump.
+// The Info popup, drawn natively (VNInfoView), so it appears at once and is
+// exactly as tall as its content (up to the room available, then it scrolls).
+- (UIView *) infoModal {
+    UIView *modal = [self createModalWithWidth:100 andHeight:100];
+    modal.backgroundColor = menuBackColor;   // same dark purple as the phone menu panel
+    modal.layer.borderWidth = 0;              // edge-less, like the slide-out menu
+    [self fillInfoModal:modal];
     infoModalView = modal;
-    infoCloseButton = b;
-    infoIsCompact = compact;
-    if (!compact) {
-        modal.alpha = 0;
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            modal.alpha = 1;   // fallback in case the page never reports in
-        });
-    }
-
     return modal;
 }
 
+// Lays out the Info popup's contents (and its size) for the current layout.
+// Also used to rebuild an open popup when the screen changes size.
+- (void) fillInfoModal:(UIView *)modal {
+    CGFloat w, maxH;
+    BOOL compact;
+    [self infoGeometryWidth:&w height:&maxH compact:&compact];
 
-// iPad: size the Info popup to its content. The right-hand column starts level
-// with the title; the popup ends just below the taller column, and the Close
-// button sits on the same row as the SpringGun Press logo (or just below the
-// right column if that runs longer).
-- (void) webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
-    if (webView != infoView || infoIsCompact) return;
+    VNInfoView *content = [[VNInfoView alloc] initWithSingleColumn:compact];
+    CGFloat h = MIN(ceil([content layoutForWidth:w]), maxH);
 
-    NSString *js = @"(function(){"
-        "function bottomOf(sel){var b=0;document.querySelectorAll(sel).forEach(function(e){b=Math.max(b,e.getBoundingClientRect().bottom);});return b;}"
-        "var logo=document.querySelector('.springgun img').getBoundingClientRect();"
-        "return [document.documentElement.clientWidth, logo.top, logo.bottom,"
-        "        bottomOf('.titles, .description p, .notes p'), bottomOf('.notes p')];"
-        "})()";
+    for (UIView *v in [modal.subviews copy]) [v removeFromSuperview];
+    modal.transform = CGAffineTransformIdentity;
+    modal.bounds = CGRectMake(0, 0, w, h);
+    content.frame = modal.bounds;
+    [modal addSubview:content];
 
-    UIView *modal = infoModalView;
-    UIButton *close = infoCloseButton;
-    [webView evaluateJavaScript:js completionHandler:^(NSArray *m, NSError *error) {
-        if (![m isKindOfClass:[NSArray class]] || m.count < 5 || [m[0] doubleValue] <= 0) {
-            [UIView animateWithDuration:0.25 animations:^{ modal.alpha = 1; }];
-            return;
-        }
-        CGFloat k = webView.bounds.size.width / [m[0] doubleValue];   // CSS px -> points
-        CGFloat top = webView.frame.origin.y;
-        CGFloat logoMid = top + ([m[1] doubleValue] + [m[2] doubleValue]) / 2 * k;
-        CGFloat contentBottom = top + [m[3] doubleValue] * k;
-        CGFloat notesBottom = top + [m[4] doubleValue] * k;
-
-        CGFloat closeH = close.bounds.size.height;
-        CGFloat closeY = MAX(logoMid - closeH / 2, notesBottom + 16);
-        CGFloat height = MAX(contentBottom, closeY + closeH) + 30;
-        height = MIN(MAX(height, 240), 660);
-
-        modal.bounds = CGRectMake(0, 0, modal.bounds.size.width, height);   // stays centred
-        CGRect wf = webView.frame; wf.size.height = height - top; webView.frame = wf;
-        CGRect cf = close.frame; cf.origin.y = closeY; close.frame = cf;
-        [UIView animateWithDuration:0.25 animations:^{ modal.alpha = 1; }];
-    }];
+    UIButton *b;
+    if (compact) {
+        // Bottom right corner; matches the menu buttons, with a larger invisible tap area.
+        b = [self createButtonWithFrame:CGRectMake(w - 16 - kMenuItemWidth, h - 16 - kMenuItemHeight, kMenuItemWidth, kMenuItemHeight)
+                                  title:@"Close" tag:CLOSE];
+        b.titleLabel.font = [UIFont fontWithName:@"EuphemiaUCAS" size:kMenuItemFontSize];
+        ((VNButton *)b).touchMargin = 12;   // stays inside the popup's 16pt edge
+    } else {
+        // On the same row as the SpringGun Press logo, right-aligned with the notes.
+        CGFloat closeY = MIN(round(CGRectGetMidY(content.logoFrame) - 20), h - 40 - 16);
+        b = [self createButtonWithFrame:CGRectMake(w - 38 - 110, closeY, 110, 40) title:@"Close" tag:CLOSE];
+    }
+    [modal addSubview:b];
 }
 
+// Rebuilds the open (faded-out) Info popup for the current size and fades it
+// back in.
+- (void) relayoutOpenInfo {
+    UIView *modal = infoModalView;
+    [modal.layer removeAllAnimations];   // in case the fade-out is still running
+    [UIView performWithoutAnimation:^{
+        [self fillInfoModal:modal];
+        [self placeModal:modal];
+        modal.alpha = 0;
+    }];
+    modal.userInteractionEnabled = YES;
+    [UIView animateWithDuration:0.25 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        modal.alpha = 1;
+    } completion:nil];
+}
 
-// Open links from the Info page in Safari rather than inside the small,
-// non-scrolling info box.
-- (void) webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
-    NSURL *url = navigationAction.request.URL;
-    if (navigationAction.navigationType == WKNavigationTypeLinkActivated && url && !url.isFileURL) {
-        [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
-        decisionHandler(WKNavigationActionPolicyCancel);
-        return;
-    }
-    decisionHandler(WKNavigationActionPolicyAllow);
+// iPad in portrait (not a phone, and taller than wide).
+- (BOOL) infoIsTall {
+    CGSize s = self.view.bounds.size;
+    return !phoneLayout && s.height > s.width;
 }
 
 
@@ -948,6 +1020,7 @@ static UIColor *driftColor(VNColorDrift *d, CFTimeInterval now) {
         CGRect f = CGRectMake(pad + col * (w + colGap), pad + row * (h + gap), w, h);
         [modal addSubview:[self popupButtonWithFrame:f title:titles[i] tag:tag]];
     }
+    [self applyGradientBackground:modal];
     return modal;
 }
 
@@ -995,6 +1068,7 @@ static UIColor *driftColor(VNColorDrift *d, CFTimeInterval now) {
     UIButton *b = [self popupButtonWithFrame:CGRectMake(20, 120, 250, buttonHeight) title:@"teleport" tag:STARDATE];
     [modal addSubview:b];
 
+    [self applyGradientBackground:modal];
     return modal;
 }
 

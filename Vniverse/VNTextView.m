@@ -23,6 +23,7 @@ static VNTercet *secondaryTercet;
         self.userInteractionEnabled = NO;
         _fieldOrigin = CGPointZero;
         _textScale = 1.0;
+        _textArea = CGRectNull;
     }
     return self;
 }
@@ -56,14 +57,17 @@ static VNTercet *secondaryTercet;
 }
 
 // Nudge a label so it is fully visible.
+- (CGRect) allowedArea {
+    return CGRectIsNull(self.textArea) ? self.bounds : self.textArea;
+}
+
 - (void) keepOnScreen:(UIView *)v {
-    CGRect f = v.frame;
+    CGRect f = v.frame, a = [self allowedArea];
     CGFloat margin = 6;
-    CGSize size = self.bounds.size;
-    if (CGRectGetMaxX(f) > size.width - margin) f.origin.x = size.width - margin - f.size.width;
-    if (f.origin.x < margin) f.origin.x = margin;
-    if (CGRectGetMaxY(f) > size.height) f.origin.y = size.height - f.size.height;
-    if (f.origin.y < 0) f.origin.y = 0;
+    if (CGRectGetMaxX(f) > CGRectGetMaxX(a) - margin) f.origin.x = CGRectGetMaxX(a) - margin - f.size.width;
+    if (f.origin.x < CGRectGetMinX(a) + margin) f.origin.x = CGRectGetMinX(a) + margin;
+    if (CGRectGetMaxY(f) > CGRectGetMaxY(a)) f.origin.y = CGRectGetMaxY(a) - f.size.height;
+    if (f.origin.y < CGRectGetMinY(a)) f.origin.y = CGRectGetMinY(a);
     v.frame = f;
 }
 
@@ -133,7 +137,7 @@ static VNTercet *secondaryTercet;
 - (VNTercet *) newTercetForStar:(int)tercet {
     CGPoint p = [self pointForStar:tercet];
     CGPoint origin = CGPointMake(p.x + 13 * self.textScale, p.y - 34 * self.textScale);
-    return [[VNTercet alloc] initWithOrigin:origin tercet:tercet scale:self.textScale bounds:self.bounds.size];
+    return [[VNTercet alloc] initWithOrigin:origin tercet:tercet scale:self.textScale area:[self allowedArea]];
 }
 
 - (void) showTercet:(int)tercet {

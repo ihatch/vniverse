@@ -13,5 +13,9 @@
 - (instancetype) initWithFrame:(CGRect)frame;
 - (void) show;
 - (void) hide;
+- (void) hideWithDuration:(NSTimeInterval)duration;
+
+// Called once the curtain has faded out and been removed.
+@property (nonatomic, copy) void (^didHide)(void);
 
 @end

@@ -30,10 +30,15 @@
 }
 
 - (void) hide {
-    [UIView animateWithDuration:0.7 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+    [self hideWithDuration:0.7];
+}
+
+- (void) hideWithDuration:(NSTimeInterval)duration {
+    [UIView animateWithDuration:duration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.alpha = 0;
     } completion:^(BOOL finished) {
         [self removeFromSuperview];
+        if (self.didHide) self.didHide();
     }];
 }
 
