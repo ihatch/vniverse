@@ -13,6 +13,7 @@
 		C628BA9A18AC726200CDAB78 /* button_back_bright.png in Resources */ = {isa = PBXBuildFile; fileRef = C628BA9918AC726200CDAB78 /* button_back_bright.png */; };
 		C628BA9D18AC7AD300CDAB78 /* VNBlackCurtain.m in Sources */ = {isa = PBXBuildFile; fileRef = C628BA9C18AC7AD300CDAB78 /* VNBlackCurtain.m */; };
 		C628BAA018AD27C200CDAB78 /* VNTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = C628BA9F18AD27C200CDAB78 /* VNTextView.m */; };
+		4E7A1C2D9B3F5A6C8D0E1F21 /* VNInfoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E7A1C2D9B3F5A6C8D0E1F22 /* VNInfoView.m */; };
 		C628BAA218AD327900CDAB78 /* v-constellations.txt in Resources */ = {isa = PBXBuildFile; fileRef = C628BAA118AD327900CDAB78 /* v-constellations.txt */; };
 		C6391C06188E342400CCC1AD /* VNData.m in Sources */ = {isa = PBXBuildFile; fileRef = C6391C05188E342400CCC1AD /* VNData.m */; };
 		C6391C0A188E361800CCC1AD /* v-tercets.txt in Resources */ = {isa = PBXBuildFile; fileRef = C6391C09188E361800CCC1AD /* v-tercets.txt */; };
@@ -28,7 +29,7 @@
 		C6540DF7188B62EA00F26E48 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C6540DF6188B62EA00F26E48 /* Images.xcassets */; };
 		C6540E18188B6B2900F26E48 /* VNStar.m in Sources */ = {isa = PBXBuildFile; fileRef = C6540E17188B6B2900F26E48 /* VNStar.m */; };
 		C6540E1D188B73DE00F26E48 /* VNStarsView.m in Sources */ = {isa = PBXBuildFile; fileRef = C6540E1A188B73DE00F26E48 /* VNStarsView.m */; };
-		C6A8AFF218B6FB87001D3C01 /* info.html in Resources */ = {isa = PBXBuildFile; fileRef = C6A8AFF118B6FB87001D3C01 /* info.html */; };
+		17A4B631CF96A4A88358E1B4 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 5E0F80C504E18DBBC64A71BA /* PrivacyInfo.xcprivacy */; };
 		C6B680FF189066BA00774429 /* VNWord.m in Sources */ = {isa = PBXBuildFile; fileRef = C6B680FE189066BA00774429 /* VNWord.m */; };
 		C6C1CA7618AB3B46008C2D4B /* VNStanzaLetter.m in Sources */ = {isa = PBXBuildFile; fileRef = C6C1CA7518AB3B46008C2D4B /* VNStanzaLetter.m */; };
 		C6C1CA7918AB3B85008C2D4B /* VNTercet.m in Sources */ = {isa = PBXBuildFile; fileRef = C6C1CA7818AB3B85008C2D4B /* VNTercet.m */; };
@@ -46,6 +47,8 @@
 		C628BA9C18AC7AD300CDAB78 /* VNBlackCurtain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VNBlackCurtain.m; sourceTree = "<group>"; };
 		C628BA9E18AD27C200CDAB78 /* VNTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VNTextView.h; sourceTree = "<group>"; };
 		C628BA9F18AD27C200CDAB78 /* VNTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VNTextView.m; sourceTree = "<group>"; };
+		4E7A1C2D9B3F5A6C8D0E1F23 /* VNInfoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VNInfoView.h; sourceTree = "<group>"; };
+		4E7A1C2D9B3F5A6C8D0E1F22 /* VNInfoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VNInfoView.m; sourceTree = "<group>"; };
 		C628BAA118AD327900CDAB78 /* v-constellations.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "v-constellations.txt"; sourceTree = "<group>"; };
 		C628BAA318AD55B200CDAB78 /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
 		C628BAA418AD55B200CDAB78 /* TestFlight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestFlight.h; sourceTree = "<group>"; };
@@ -73,7 +76,7 @@
 		C6540E17188B6B2900F26E48 /* VNStar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VNStar.m; sourceTree = "<group>"; };
 		C6540E19188B73DE00F26E48 /* VNStarsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VNStarsView.h; sourceTree = "<group>"; };
 		C6540E1A188B73DE00F26E48 /* VNStarsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VNStarsView.m; sourceTree = "<group>"; };
-		C6A8AFF118B6FB87001D3C01 /* info.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = info.html; sourceTree = "<group>"; };
+		5E0F80C504E18DBBC64A71BA /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		C6B680FD189066BA00774429 /* VNWord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VNWord.h; sourceTree = "<group>"; };
 		C6B680FE189066BA00774429 /* VNWord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VNWord.m; sourceTree = "<group>"; };
 		C6C1CA7418AB3B46008C2D4B /* VNStanzaLetter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VNStanzaLetter.h; sourceTree = "<group>"; };
@@ -126,6 +129,8 @@
 				C6540E1A188B73DE00F26E48 /* VNStarsView.m */,
 				C628BA9E18AD27C200CDAB78 /* VNTextView.h */,
 				C628BA9F18AD27C200CDAB78 /* VNTextView.m */,
+				4E7A1C2D9B3F5A6C8D0E1F23 /* VNInfoView.h */,
+				4E7A1C2D9B3F5A6C8D0E1F22 /* VNInfoView.m */,
 				C628BA9118AC4D7900CDAB78 /* VNConstellationView.h */,
 				C628BA9218AC4D7900CDAB78 /* VNConstellationView.m */,
 				C6540E16188B6B2900F26E48 /* VNStar.h */,
@@ -199,7 +204,7 @@
 				C6540DE7188B62EA00F26E48 /* InfoPlist.strings */,
 				C6540DEA188B62EA00F26E48 /* main.m */,
 				C6540DEC188B62EA00F26E48 /* Vniverse-Prefix.pch */,
-				C6A8AFF118B6FB87001D3C01 /* info.html */,
+				5E0F80C504E18DBBC64A71BA /* PrivacyInfo.xcprivacy */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -267,7 +272,7 @@
 				C6391C0C188E394E00CCC1AD /* v-stars.txt in Resources */,
 				C6DE546F18BD4D78000A3DAB /* springgun2.png in Resources */,
 				C6540DF7188B62EA00F26E48 /* Images.xcassets in Resources */,
-				C6A8AFF218B6FB87001D3C01 /* info.html in Resources */,
+				17A4B631CF96A4A88358E1B4 /* PrivacyInfo.xcprivacy in Resources */,
 				C628BAA218AD327900CDAB78 /* v-constellations.txt in Resources */,
 				C628BA9A18AC726200CDAB78 /* button_back_bright.png in Resources */,
 				C6540DE9188B62EA00F26E48 /* InfoPlist.strings in Resources */,
@@ -293,6 +298,7 @@
 				C6540E18188B6B2900F26E48 /* VNStar.m in Sources */,
 				C6540DF5188B62EA00F26E48 /* VNViewController.m in Sources */,
 				C628BAA018AD27C200CDAB78 /* VNTextView.m in Sources */,
+				4E7A1C2D9B3F5A6C8D0E1F21 /* VNInfoView.m in Sources */,
 				C6540DEB188B62EA00F26E48 /* main.m in Sources */,
 				C628BA8F18AC252500CDAB78 /* VNStanzaLine.m in Sources */,
 				C6391C06188E342400CCC1AD /* VNData.m in Sources */,
