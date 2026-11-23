@@ -24,7 +24,6 @@
 static NSString * const kTitle   = @"Vniverse";
 static NSString * const kVersion = @"v2.1; Nov 2026";
 static NSString * const kAuthors = @"Stephanie Strickland and Ian Hatcher";
-static NSString * const kLogoURL = @"https://www.springgunpress.com/v-stephanie-strickland";
 
 static NSArray<NSString *> *DescriptionParagraphs(void) {
     return @[
@@ -331,7 +330,7 @@ static NSAttributedString *StyledText(NSArray<NSString *> *paragraphs, CGFloat s
     UIScrollView *scroll;
     VNTextBlock *title, *authors, *description, *about, *bios;
     UIView *divider1, *divider2, *divider3;
-    UIButton *logo;
+    UIView *logo;          // bordered frame around the image
     UIImageView *logoImage;
     CAGradientLayer *fadeMask;
 }
@@ -379,17 +378,17 @@ static NSAttributedString *StyledText(NSArray<NSString *> *paragraphs, CGFloat s
         divider2 = [self divider];   // single column only: between the description and the notes
         divider3 = [self divider];   // above the bios
 
-        // SpringGun Press logo, linking to the book.
-        logo = [UIButton buttonWithType:UIButtonTypeCustom];
+        // SpringGun Press logo (a plain image; its old link no longer works).
+        logo = [[UIView alloc] init];
         logoImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"springgun2.png"]];
         logoImage.contentMode = UIViewContentModeScaleAspectFit;
         logoImage.userInteractionEnabled = NO;
         [logo addSubview:logoImage];
         logo.layer.borderWidth = 1;
         logo.layer.borderColor = LogoBorderColor().CGColor;
+        logo.isAccessibilityElement = YES;
         logo.accessibilityLabel = @"SpringGun Press";
-        logo.accessibilityHint = @"Opens the book’s page in Safari";
-        [logo addTarget:self action:@selector(openLogo) forControlEvents:UIControlEventTouchUpInside];
+        logo.accessibilityTraits = UIAccessibilityTraitImage;
         [scroll addSubview:logo];
 
         if (single) {
@@ -524,8 +523,5 @@ static NSAttributedString *StyledText(NSArray<NSString *> *paragraphs, CGFloat s
     [self updateFade];
 }
 
-- (void) openLogo {
-    [self.window.windowScene openURL:[NSURL URLWithString:kLogoURL] options:nil completionHandler:nil];
-}
 
 @end

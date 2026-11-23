@@ -48,8 +48,8 @@
 }
 
 - (void) animateIn {
-    CGFloat randomDelay = ABF(0.8);
-    CGFloat randomDuration = 1 + ABF(1.8);
+    CGFloat randomDelay = ABF(0.64);
+    CGFloat randomDuration = 0.8 + ABF(1.44);
     [UIView animateWithDuration:randomDuration delay:randomDelay options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.alpha = 1.0;
         self.transform = CGAffineTransformMakeScale(1, 1);
@@ -71,8 +71,8 @@
 
 - (void) selfDestruct {
     
-    CGFloat randomDelay = ABF(0.8);
-    CGFloat randomDuration = 1 + ABF(1.8);
+    CGFloat randomDelay = ABF(0.64);
+    CGFloat randomDuration = 0.8 + ABF(1.44);
     
     [UIView animateWithDuration:randomDuration delay:randomDelay options:(UIViewAnimationOptionCurveEaseInOut|UIViewAnimationOptionBeginFromCurrentState) animations:^{
         self.alpha = 0;

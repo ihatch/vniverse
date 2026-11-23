@@ -59,9 +59,7 @@
     CGFloat y = 40 * scale;
     for(int i=0; i<[tercetText count]; i++) {
         NSString *str = tercetText[i];
-        // Split into whole characters. (The old "%c" format kept only the low
-        // byte of each character, which dropped or garbled curly quotes,
-        // accented letters and other non-ASCII text.)
+        // Split into whole characters.
         NSMutableArray *characters = [[NSMutableArray alloc] initWithCapacity:[str length]];
         [str enumerateSubstringsInRange:NSMakeRange(0, [str length])
                                 options:NSStringEnumerationByComposedCharacterSequences

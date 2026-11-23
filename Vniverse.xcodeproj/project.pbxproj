@@ -7,13 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		17A4B631CF96A4A88358E1B4 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 5E0F80C504E18DBBC64A71BA /* PrivacyInfo.xcprivacy */; };
+		4E7A1C2D9B3F5A6C8D0E1F21 /* VNInfoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E7A1C2D9B3F5A6C8D0E1F22 /* VNInfoView.m */; };
 		C628BA8F18AC252500CDAB78 /* VNStanzaLine.m in Sources */ = {isa = PBXBuildFile; fileRef = C628BA8E18AC252500CDAB78 /* VNStanzaLine.m */; };
 		C628BA9318AC4D7900CDAB78 /* VNConstellationView.m in Sources */ = {isa = PBXBuildFile; fileRef = C628BA9218AC4D7900CDAB78 /* VNConstellationView.m */; };
 		C628BA9818AC651000CDAB78 /* button_back.png in Resources */ = {isa = PBXBuildFile; fileRef = C628BA9718AC651000CDAB78 /* button_back.png */; };
 		C628BA9A18AC726200CDAB78 /* button_back_bright.png in Resources */ = {isa = PBXBuildFile; fileRef = C628BA9918AC726200CDAB78 /* button_back_bright.png */; };
 		C628BA9D18AC7AD300CDAB78 /* VNBlackCurtain.m in Sources */ = {isa = PBXBuildFile; fileRef = C628BA9C18AC7AD300CDAB78 /* VNBlackCurtain.m */; };
 		C628BAA018AD27C200CDAB78 /* VNTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = C628BA9F18AD27C200CDAB78 /* VNTextView.m */; };
-		4E7A1C2D9B3F5A6C8D0E1F21 /* VNInfoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E7A1C2D9B3F5A6C8D0E1F22 /* VNInfoView.m */; };
 		C628BAA218AD327900CDAB78 /* v-constellations.txt in Resources */ = {isa = PBXBuildFile; fileRef = C628BAA118AD327900CDAB78 /* v-constellations.txt */; };
 		C6391C06188E342400CCC1AD /* VNData.m in Sources */ = {isa = PBXBuildFile; fileRef = C6391C05188E342400CCC1AD /* VNData.m */; };
 		C6391C0A188E361800CCC1AD /* v-tercets.txt in Resources */ = {isa = PBXBuildFile; fileRef = C6391C09188E361800CCC1AD /* v-tercets.txt */; };
@@ -29,7 +30,6 @@
 		C6540DF7188B62EA00F26E48 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C6540DF6188B62EA00F26E48 /* Images.xcassets */; };
 		C6540E18188B6B2900F26E48 /* VNStar.m in Sources */ = {isa = PBXBuildFile; fileRef = C6540E17188B6B2900F26E48 /* VNStar.m */; };
 		C6540E1D188B73DE00F26E48 /* VNStarsView.m in Sources */ = {isa = PBXBuildFile; fileRef = C6540E1A188B73DE00F26E48 /* VNStarsView.m */; };
-		17A4B631CF96A4A88358E1B4 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 5E0F80C504E18DBBC64A71BA /* PrivacyInfo.xcprivacy */; };
 		C6B680FF189066BA00774429 /* VNWord.m in Sources */ = {isa = PBXBuildFile; fileRef = C6B680FE189066BA00774429 /* VNWord.m */; };
 		C6C1CA7618AB3B46008C2D4B /* VNStanzaLetter.m in Sources */ = {isa = PBXBuildFile; fileRef = C6C1CA7518AB3B46008C2D4B /* VNStanzaLetter.m */; };
 		C6C1CA7918AB3B85008C2D4B /* VNTercet.m in Sources */ = {isa = PBXBuildFile; fileRef = C6C1CA7818AB3B85008C2D4B /* VNTercet.m */; };
@@ -37,6 +37,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4E7A1C2D9B3F5A6C8D0E1F22 /* VNInfoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VNInfoView.m; sourceTree = "<group>"; };
+		4E7A1C2D9B3F5A6C8D0E1F23 /* VNInfoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VNInfoView.h; sourceTree = "<group>"; };
+		5E0F80C504E18DBBC64A71BA /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		C628BA8D18AC252500CDAB78 /* VNStanzaLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VNStanzaLine.h; sourceTree = "<group>"; };
 		C628BA8E18AC252500CDAB78 /* VNStanzaLine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VNStanzaLine.m; sourceTree = "<group>"; };
 		C628BA9118AC4D7900CDAB78 /* VNConstellationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VNConstellationView.h; sourceTree = "<group>"; };
@@ -47,8 +50,6 @@
 		C628BA9C18AC7AD300CDAB78 /* VNBlackCurtain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VNBlackCurtain.m; sourceTree = "<group>"; };
 		C628BA9E18AD27C200CDAB78 /* VNTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VNTextView.h; sourceTree = "<group>"; };
 		C628BA9F18AD27C200CDAB78 /* VNTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VNTextView.m; sourceTree = "<group>"; };
-		4E7A1C2D9B3F5A6C8D0E1F23 /* VNInfoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VNInfoView.h; sourceTree = "<group>"; };
-		4E7A1C2D9B3F5A6C8D0E1F22 /* VNInfoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VNInfoView.m; sourceTree = "<group>"; };
 		C628BAA118AD327900CDAB78 /* v-constellations.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "v-constellations.txt"; sourceTree = "<group>"; };
 		C628BAA318AD55B200CDAB78 /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
 		C628BAA418AD55B200CDAB78 /* TestFlight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestFlight.h; sourceTree = "<group>"; };
@@ -76,7 +77,6 @@
 		C6540E17188B6B2900F26E48 /* VNStar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VNStar.m; sourceTree = "<group>"; };
 		C6540E19188B73DE00F26E48 /* VNStarsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VNStarsView.h; sourceTree = "<group>"; };
 		C6540E1A188B73DE00F26E48 /* VNStarsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VNStarsView.m; sourceTree = "<group>"; };
-		5E0F80C504E18DBBC64A71BA /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		C6B680FD189066BA00774429 /* VNWord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VNWord.h; sourceTree = "<group>"; };
 		C6B680FE189066BA00774429 /* VNWord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VNWord.m; sourceTree = "<group>"; };
 		C6C1CA7418AB3B46008C2D4B /* VNStanzaLetter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VNStanzaLetter.h; sourceTree = "<group>"; };
@@ -237,7 +237,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				CLASSPREFIX = VN;
-				LastUpgradeCheck = 1540;
+				LastUpgradeCheck = 2720;
 				ORGANIZATIONNAME = "Ian Hatcher";
 				TargetAttributes = {
 					C6540DDA188B62EA00F26E48 = {
@@ -351,6 +351,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer: Ian Hatcher (6NSQ5G4H8K)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = U595KEB552;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -373,6 +374,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PROVISIONING_PROFILE = "46b63174-37a4-4a7b-86f7-6d06e2cc06a4";
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -409,6 +411,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Ian Hatcher (U595KEB552)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = U595KEB552;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -424,6 +427,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PROVISIONING_PROFILE = "46b63174-37a4-4a7b-86f7-6d06e2cc06a4";
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -435,11 +439,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-2";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = U595KEB552;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Vniverse/Vniverse-Prefix.pch";
 				INFOPLIST_FILE = "Vniverse/Vniverse-Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.books";
+				IPHONEOS_DEPLOYMENT_TARGET = "$(RECOMMENDED_IPHONEOS_DEPLOYMENT_TARGET)";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MARKETING_VERSION = 2.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ihatch.vniverse;
@@ -458,11 +462,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-2";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = U595KEB552;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Vniverse/Vniverse-Prefix.pch";
 				INFOPLIST_FILE = "Vniverse/Vniverse-Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.books";
+				IPHONEOS_DEPLOYMENT_TARGET = "$(RECOMMENDED_IPHONEOS_DEPLOYMENT_TARGET)";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MARKETING_VERSION = 2.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ihatch.vniverse;
